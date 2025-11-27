@@ -1,0 +1,54 @@
+package authors
+
+import (
+	"context"
+
+	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/persistence"
+)
+
+type AuthorsRepository struct {
+	exec persistence.Executer
+}
+
+func NewAuthorsRepository(exec persistence.Executer) *AuthorsRepository {
+	return &AuthorsRepository{exec: exec}
+}
+
+func (r *AuthorsRepository) WithTx(exec persistence.Executer) AuthorRepositoryTx {
+	return &AuthorsRepository{exec: exec}
+}
+
+func (r *AuthorsRepository) Create(ctx context.Context, a *Authors) error {
+	query := "INSERT INTO authors (name, description) VALUES (?, ?)"
+	result, err := r.exec.ExecContext(ctx, query, a.Name, a.Description)
+	if err != nil {
+		return err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	a.ID = id
+	return nil
+}
+
+func (r *AuthorsRepository) GetAll(ctx context.Context) ([]Authors, error) {
+	rows, err := r.exec.QueryContext(ctx, `SELECT * FROM authors`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var authorsAll []Authors
+
+	for rows.Next() {
+		var a Authors
+		if err := rows.Scan(&a.ID, &a.Name, &a.Description); err != nil {
+			return nil, err
+		}
+		authorsAll = append(authorsAll, a)
+	}
+	return authorsAll, nil
+}
