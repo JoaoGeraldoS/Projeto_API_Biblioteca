@@ -29,8 +29,6 @@ func Connection() *sql.DB {
 		log.Fatal("Erro ao verificar conexão")
 	}
 
-	log.Print("Conexão realizada")
-
 	return db
 }
 
