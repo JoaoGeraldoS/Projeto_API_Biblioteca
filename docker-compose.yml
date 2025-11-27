@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    container_name: library-api
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootSenha
+      MYSQL_USER: imoraly
+      MYSQL_DATABASE: library
+      MYSQL_PASSWORD: senha210
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./data:/var/lib/mysql
