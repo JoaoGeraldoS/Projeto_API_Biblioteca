@@ -18,7 +18,7 @@ func seedData(t *testing.T, exec persistence.Executer) {
 	categoryRepo := categories.NewCategoryRepository(exec)
 	bookRepo := books.NewBookRepository(exec)
 
-	if err := authorRepo.Create(ctx, &authors.Authors{ID: 1, Name: "Autor X"}); err != nil {
+	if err := authorRepo.Create(ctx, &authors.Authors{ID: 1, Name: "Autor X", Description: "Teste"}); err != nil {
 		t.Fatalf("author: %v", err)
 	}
 
@@ -108,28 +108,28 @@ func TestBookRepository_GetAll_TableDriven(t *testing.T) {
 
 	ctx := context.Background()
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 
-			got, err := repo.GetAll(ctx, tc.filter)
+			got, err := repo.GetAll(ctx, tt.filter)
 			if err != nil {
 				t.Fatalf("erro inesperado: %v", err)
 			}
 
-			if len(got) != tc.wantCount {
-				t.Fatalf("qtde errada: esperava %d, veio %d", tc.wantCount, len(got))
+			if len(got) != tt.wantCount {
+				t.Fatalf("qtde errada: esperava %d, veio %d", tt.wantCount, len(got))
 			}
 
-			if tc.wantCount == 0 {
+			if tt.wantCount == 0 {
 				return
 			}
 
-			if got[0].ID != tc.wantFirstID {
-				t.Errorf("ID errado. esperado %d, veio %d", tc.wantFirstID, got[0].ID)
+			if got[0].ID != tt.wantFirstID {
+				t.Errorf("ID errado. esperado %d, veio %d", tt.wantFirstID, got[0].ID)
 			}
 
-			if got[0].Title != tc.wantFirstName {
-				t.Errorf("Título errado. esperado %s, veio %s", tc.wantFirstName, got[0].Title)
+			if got[0].Title != tt.wantFirstName {
+				t.Errorf("Título errado. esperado %s, veio %s", tt.wantFirstName, got[0].Title)
 			}
 
 			if len(got[0].Categories) == 0 {
