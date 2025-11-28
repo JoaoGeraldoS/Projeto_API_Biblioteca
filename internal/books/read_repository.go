@@ -50,22 +50,22 @@ func (r *BookRepository) GetById(ctx context.Context, id int64) (*Books, error) 
 			Content:     content,
 			CreatedAt:   createdAt,
 			UpdatedAt:   updatedAt,
-			Categories:  []*categories.Category{},
-			Authors:     []authors.Authors{},
+			Categories:  []categories.Category{},
+			Authors:     authors.Authors{},
 		}
 	}
 
-	bookMap[bookID].Categories = append(bookMap[bookID].Categories, &categories.Category{
+	bookMap[bookID].Categories = append(bookMap[bookID].Categories, categories.Category{
 		ID:        categoryId,
 		Name:      categoryName,
 		CreatedAT: createdAtCat,
 	})
 
-	bookMap[bookID].Authors = append(bookMap[bookID].Authors, authors.Authors{
+	bookMap[bookID].Authors = authors.Authors{
 		ID:          IDAuthor,
 		Name:        authorName,
 		Description: authorDec,
-	})
+	}
 
 	book = bookMap[bookID]
 

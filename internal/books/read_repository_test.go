@@ -84,7 +84,7 @@ func TestBookRepository_GetById(t *testing.T) {
 			if len(got.Categories) == 0 {
 				t.Errorf("esperava categoria")
 			}
-			if len(got.Authors) == 0 {
+			if got.AuthorID == 0 {
 				t.Errorf("esperava autor")
 			}
 		})

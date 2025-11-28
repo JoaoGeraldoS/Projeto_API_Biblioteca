@@ -8,7 +8,7 @@ import (
 )
 
 type UnitOfWorkInterface interface {
-	Executer(ctx context.Context, fn func(exec persistence.Executer) error) error
+	Execute(ctx context.Context, fn func(exec persistence.Executer) error) error
 }
 
 type UnitOfWork struct {

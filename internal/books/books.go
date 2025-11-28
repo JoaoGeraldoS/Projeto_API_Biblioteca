@@ -2,6 +2,7 @@ package books
 
 import (
 	"context"
+	"errors"
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/authors"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/categories"
@@ -15,9 +16,9 @@ type Books struct {
 	Content     string
 	CreatedAt   string
 	UpdatedAt   string
-	Categories  []*categories.Category
+	Categories  []categories.Category
 	AuthorID    int64
-	Authors     []authors.Authors
+	Authors     authors.Authors
 }
 
 type Uow interface {
@@ -38,4 +39,20 @@ type BookRead interface {
 type BookRepositoryTx interface {
 	BookCreator
 	BookRead
+}
+
+func (b *Books) Validate() error {
+	if b.Title == "" {
+		return errors.New("titilo em branco")
+	}
+
+	if b.Description == "" {
+		return errors.New("descrição invalida")
+	}
+
+	if b.Authors.Name == "" {
+		return errors.New("autor invalido")
+	}
+
+	return nil
 }

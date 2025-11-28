@@ -97,22 +97,22 @@ func (r *BookRepository) GetAll(ctx context.Context, filter *Filters) ([]Books, 
 				Content:     content,
 				CreatedAt:   createdAt,
 				UpdatedAt:   updatedAt,
-				Categories:  []*categories.Category{},
-				Authors:     []authors.Authors{},
+				Categories:  []categories.Category{},
+				Authors:     authors.Authors{},
 			}
 		}
 
-		booksMap[bookID].Categories = append(booksMap[bookID].Categories, &categories.Category{
+		booksMap[bookID].Categories = append(booksMap[bookID].Categories, categories.Category{
 			ID:        categoryId,
 			Name:      categoryName,
 			CreatedAT: createdAtCat,
 		})
 
-		booksMap[bookID].Authors = append(booksMap[bookID].Authors, authors.Authors{
+		booksMap[bookID].Authors = authors.Authors{
 			ID:          IDAuthor,
 			Name:        authorName,
 			Description: authorDec,
-		})
+		}
 	}
 	var books []Books
 	for _, book := range booksMap {

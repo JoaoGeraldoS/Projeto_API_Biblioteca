@@ -135,7 +135,7 @@ func TestBookRepository_GetAll_TableDriven(t *testing.T) {
 			if len(got[0].Categories) == 0 {
 				t.Errorf("esperava categoria")
 			}
-			if len(got[0].Authors) == 0 {
+			if got[0].Authors.ID == 0 {
 				t.Errorf("esperava autor")
 			}
 		})
