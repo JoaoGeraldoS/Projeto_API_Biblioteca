@@ -2,21 +2,21 @@ package books_test
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/authors"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/books"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/categories"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/database"
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/persistence"
 )
 
-func seedData(t *testing.T, exec persistence.Executer) {
+func seedData(t *testing.T, db *sql.DB) {
 	ctx := context.Background()
 
-	authorRepo := authors.NewAuthorsRepository(exec)
-	categoryRepo := categories.NewCategoryRepository(exec)
-	bookRepo := books.NewBookRepository(exec)
+	authorRepo := authors.NewAuthorsRepository(db)
+	categoryRepo := categories.NewCategoryRepository(db)
+	bookRepo := books.NewBookRepository(db)
 
 	if err := authorRepo.Create(ctx, &authors.Authors{ID: 1, Name: "Autor X", Description: "Teste"}); err != nil {
 		t.Fatalf("author: %v", err)

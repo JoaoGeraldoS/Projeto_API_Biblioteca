@@ -28,7 +28,7 @@ func (r *BookRepository) GetById(ctx context.Context, id int64) (*Books, error) 
 		createdAtRaw, updatedAtRaw, createdAtCatRaw time.Time
 	)
 
-	err := r.exec.QueryRowContext(ctx, sql, id).Scan(&bookID, &title, &authorId, &description, &content,
+	err := r.db.QueryRowContext(ctx, sql, id).Scan(&bookID, &title, &authorId, &description, &content,
 		&createdAtRaw, &updatedAtRaw, &categoryId, &categoryName, &createdAtCatRaw,
 		&IDAuthor, &authorName, &authorDec,
 	)

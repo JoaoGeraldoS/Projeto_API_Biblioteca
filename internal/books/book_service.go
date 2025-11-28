@@ -2,69 +2,38 @@ package books
 
 import (
 	"context"
-
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/authors"
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/categories"
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/persistence"
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/persistence/transaction"
 )
 
-// type bookCreator interface {
-// 	Create(ctx context.Context, b *Books) error
-// }
-
-// type bookRead interface {
-// 	GetAll(ctx context.Context, filter *Filters)
-// }
-
-type BookUsecase interface {
+type BookServcie interface {
 	BookCreator
 	BookRead
 }
 
-type BookService struct {
-	uow  transaction.UnitOfWorkInterface
-	auth authors.AuthorRepositoryTx
-	cat  categories.CategoryRepositoryTx
-	book BookRepositoryTx
+type serviceBook struct {
+	book IBookRepository
 }
 
-func NewBookService(u transaction.UnitOfWorkInterface, a authors.AuthorRepositoryTx,
-	c categories.CategoryRepositoryTx, b BookRepositoryTx,
-) *BookService {
-	return &BookService{uow: u, auth: a, cat: c, book: b}
+func NewBookService(b IBookRepository) *serviceBook {
+	return &serviceBook{book: b}
 }
 
-func (s *BookService) Create(ctx context.Context, b *Books) error {
-	return s.uow.Execute(ctx, func(exec persistence.Executer) error {
+func (s *serviceBook) Create(ctx context.Context, b *Books) error {
 
-		if err := b.Validate(); err != nil {
-			return err
-		}
+	if err := b.Validate(); err != nil {
+		return err
+	}
 
-		authRepo := s.auth.WithTx(exec)
-		catRepo := s.cat.WithTx(exec)
-		bookRepo := s.book.WithTx(exec)
+	return s.book.Create(ctx, b)
+}
 
-		if err := authRepo.Create(ctx, &b.Authors); err != nil {
-			return err
-		}
+func (s *serviceBook) GetAll(ctx context.Context, filter *Filters) ([]Books, error) {
+	return s.book.GetAll(ctx, filter)
+}
 
-		if err := bookRepo.Create(ctx, b); err != nil {
-			return err
-		}
+func (s *serviceBook) GetById(ctx context.Context, id int64) (*Books, error) {
+	return s.book.GetById(ctx, id)
+}
 
-		for i := range b.Categories {
-			c := &b.Categories[i]
-
-			if err := catRepo.Create(ctx, c); err != nil {
-				return err
-			}
-
-			if err := bookRepo.RelationBookCategory(ctx, b.ID, c.ID); err != nil {
-				return err
-			}
-		}
-		return nil
-	})
+func (s *serviceBook) RelationBookCategory(ctx context.Context, bookID, catID int64) error {
+	return s.book.RelationBookCategory(ctx, bookID, catID)
 }

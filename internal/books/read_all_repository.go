@@ -62,7 +62,7 @@ func (r *BookRepository) GetAll(ctx context.Context, filter *Filters) ([]Books, 
 		params = append(params, size, offset)
 	}
 
-	rows, err := r.exec.QueryContext(ctx, sql, params...)
+	rows, err := r.db.QueryContext(ctx, sql, params...)
 	if err != nil {
 		return nil, err
 	}

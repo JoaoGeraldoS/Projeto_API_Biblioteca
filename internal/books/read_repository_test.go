@@ -2,21 +2,21 @@ package books_test
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/authors"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/books"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/categories"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/database"
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/persistence"
 )
 
-func seedDataUnic(t *testing.T, exec persistence.Executer) {
+func seedDataUnic(t *testing.T, db *sql.DB) {
 	ctx := context.Background()
 
-	authorRepo := authors.NewAuthorsRepository(exec)
-	categoryRepo := categories.NewCategoryRepository(exec)
-	bookRepo := books.NewBookRepository(exec)
+	authorRepo := authors.NewAuthorsRepository(db)
+	categoryRepo := categories.NewCategoryRepository(db)
+	bookRepo := books.NewBookRepository(db)
 
 	cat := &categories.Category{ID: 1, Name: "Programação"}
 
