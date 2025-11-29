@@ -2,8 +2,7 @@ package authors
 
 import (
 	"context"
-
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/persistence"
+	"errors"
 )
 
 type Authors struct {
@@ -14,14 +13,28 @@ type Authors struct {
 
 type AuthorsCreator interface {
 	Create(ctx context.Context, a *Authors) error
-	WithTx(exec persistence.Executer) AuthorRepositoryTx
+	Update(ctx context.Context, author *Authors) error
+	Delete(ctx context.Context, id int64) error
 }
 
 type AuthorsRead interface {
 	GetAll(ctx context.Context) ([]Authors, error)
+	GetByID(ctx context.Context, id int64) (*Authors, error)
 }
 
-type AuthorRepositoryTx interface {
+type IAuthorRepository interface {
 	AuthorsCreator
 	AuthorsRead
+}
+
+func (a *Authors) Validate() error {
+	if a.Name == "" {
+		return errors.New("Nome invalido!")
+	}
+
+	if a.Description == "" {
+		return errors.New("Descricao invalida!")
+	}
+
+	return nil
 }

@@ -13,10 +13,13 @@ type Category struct {
 
 type CategoryCreator interface {
 	Create(ctx context.Context, c *Category) error
+	Update(ctx context.Context, category *Category) error
+	Delete(ctx context.Context, id int64) error
 }
 
 type CategoryRead interface {
 	GetAll(ctx context.Context) ([]Category, error)
+	GetById(ctx context.Context, id int64) (*Category, error)
 }
 
 type ICategoryRepository interface {

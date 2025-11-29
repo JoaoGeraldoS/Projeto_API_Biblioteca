@@ -7,15 +7,10 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func Connection() *sql.DB {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Erro ao carregar o env")
-	}
 
 	dbUrl := os.Getenv("DATABASE_URL")
 
