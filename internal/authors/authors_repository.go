@@ -2,25 +2,20 @@ package authors
 
 import (
 	"context"
-
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/persistence"
+	"database/sql"
 )
 
 type AuthorsRepository struct {
-	exec persistence.Executer
+	db *sql.DB
 }
 
-func NewAuthorsRepository(exec persistence.Executer) *AuthorsRepository {
-	return &AuthorsRepository{exec: exec}
-}
-
-func (r *AuthorsRepository) WithTx(exec persistence.Executer) AuthorRepositoryTx {
-	return &AuthorsRepository{exec: exec}
+func NewAuthorsRepository(db *sql.DB) *AuthorsRepository {
+	return &AuthorsRepository{db: db}
 }
 
 func (r *AuthorsRepository) Create(ctx context.Context, a *Authors) error {
 	query := "INSERT INTO authors (name, description) VALUES (?, ?)"
-	result, err := r.exec.ExecContext(ctx, query, a.Name, a.Description)
+	result, err := r.db.ExecContext(ctx, query, a.Name, a.Description)
 	if err != nil {
 		return err
 	}
@@ -35,7 +30,7 @@ func (r *AuthorsRepository) Create(ctx context.Context, a *Authors) error {
 }
 
 func (r *AuthorsRepository) GetAll(ctx context.Context) ([]Authors, error) {
-	rows, err := r.exec.QueryContext(ctx, `SELECT * FROM authors`)
+	rows, err := r.db.QueryContext(ctx, `SELECT * FROM authors`)
 	if err != nil {
 		return nil, err
 	}

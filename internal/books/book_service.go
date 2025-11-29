@@ -34,6 +34,14 @@ func (s *serviceBook) GetById(ctx context.Context, id int64) (*Books, error) {
 	return s.book.GetById(ctx, id)
 }
 
+func (s *serviceBook) Update(ctx context.Context, b *Books) error {
+	return s.book.Update(ctx, b)
+}
+
+func (s *serviceBook) Delete(ctx context.Context, id int64) error {
+	return s.book.Delete(ctx, id)
+}
+
 func (s *serviceBook) RelationBookCategory(ctx context.Context, bookID, catID int64) error {
 	return s.book.RelationBookCategory(ctx, bookID, catID)
 }

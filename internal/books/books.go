@@ -22,6 +22,8 @@ type Books struct {
 
 type BookCreator interface {
 	Create(ctx context.Context, b *Books) error
+	Update(ctx context.Context, b *Books) error
+	Delete(ctx context.Context, id int64) error
 	RelationBookCategory(ctx context.Context, bookID, categoryID int64) error
 }
 

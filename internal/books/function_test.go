@@ -20,6 +20,11 @@ func setupTest(mockBookSvc BookServcie) (*gin.Engine, *httptest.ResponseRecorder
 	router.Use(middleware.ErrorHandler())
 
 	router.POST("/api/books", handler.CreateBook)
+	router.PUT("/api/books/:id", handler.UpdateBook)
+	router.DELETE("/api/books/:id", handler.DeleteBook)
+	router.GET("/api/books", handler.ReadAllBooks)
+	router.GET("/api/books/:id", handler.ReadBook)
+	router.POST("/api/books/relation", handler.RelationBookCategory)
 
 	return router, httptest.NewRecorder()
 }
@@ -28,6 +33,13 @@ var validBookRequest = BookRequest{
 	Title:       "A menina e o proquinho",
 	Description: "Livro infantil",
 	Content:     "A menina e o porquinho",
+	AuthorID:    1,
+}
+
+var updateBookRequest = BookRequest{
+	Title:       "Update Test",
+	Description: "Update Test",
+	Content:     "Update Test",
 	AuthorID:    1,
 }
 

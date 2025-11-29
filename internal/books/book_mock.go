@@ -28,5 +28,24 @@ func (m *MockBookRepo) GetAll(ctx context.Context, filter *Filters) ([]Books, er
 
 func (m *MockBookRepo) GetById(ctx context.Context, id int64) (*Books, error) {
 	args := m.Called(ctx, id)
-	return args.Get(0).(*Books), args.Error(1)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	book, ok := args.Get(0).(*Books)
+	if !ok {
+		return nil, args.Error(1)
+	}
+
+	return book, args.Error(1)
+}
+
+func (m *MockBookRepo) Update(ctx context.Context, b *Books) error {
+	args := m.Called(ctx, b)
+	return args.Error(0)
+}
+
+func (m *MockBookRepo) Delete(ctx context.Context, id int64) error {
+	args := m.Called(ctx, id)
+	return args.Error(0)
 }

@@ -3,6 +3,7 @@ package books
 import (
 	"context"
 	"database/sql"
+	"errors"
 )
 
 type BookRepository struct {
@@ -27,6 +28,42 @@ func (r *BookRepository) Create(ctx context.Context, b *Books) error {
 	}
 
 	b.ID = id
+	return nil
+}
+
+func (r *BookRepository) Update(ctx context.Context, b *Books) error {
+	query := "UPDATE books SET title = ?, description = ?, content = ?, author_id = ? WHERE id = ?"
+
+	result, err := r.db.ExecContext(ctx, query, b.Title, b.Description, b.Content, b.AuthorID, b.ID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("erro ao atualizar livro")
+	}
+	return nil
+}
+
+func (r *BookRepository) Delete(ctx context.Context, id int64) error {
+	result, err := r.db.ExecContext(ctx, "DELETE FROM books WHERE id = ?", id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return nil
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("erro ao deletar livro")
+	}
 	return nil
 }
 
