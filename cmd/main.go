@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/database"
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/routes"
+	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/database"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/logger"
+	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/routes"
 	"github.com/joho/godotenv"
 
 	_ "github.com/JoaoGeraldoS/Projeto_API_Biblioteca/docs"

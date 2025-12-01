@@ -7,7 +7,7 @@ import (
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/authors"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/books"
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/database"
+	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/database"
 )
 
 func TestBookRepository_Create(t *testing.T) {

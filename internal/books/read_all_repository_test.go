@@ -8,7 +8,7 @@ import (
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/authors"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/books"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/categories"
-	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/database"
+	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/database"
 )
 
 func seedData(t *testing.T, db *sql.DB) {

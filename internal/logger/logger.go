@@ -5,8 +5,6 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var instance *zap.Logger
-
 func NewLogger(loggerEnv string) *zap.Logger {
 	level := zap.NewAtomicLevel()
 
@@ -44,7 +42,6 @@ func NewLogger(loggerEnv string) *zap.Logger {
 		panic(err)
 	}
 
-	instance = l
-	return instance
+	return l
 
 }
