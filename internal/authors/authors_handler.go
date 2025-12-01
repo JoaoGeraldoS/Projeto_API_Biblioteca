@@ -74,7 +74,7 @@ func (h *AuthorHandler) ReadAuthors(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary Obtem autor
+// @Summary Obter autor
 // @Description Retorna um autor
 // @Tags authors
 // @Accept json

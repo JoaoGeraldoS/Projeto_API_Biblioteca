@@ -25,8 +25,7 @@ func init() {
 // @title API da Biblioteca
 // @version 1.0
 // @description Esta é a API de gerenciamento de livros da Biblioteca.
-
-// @securityDefinitions.apikey BearerAuth
+// @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
 

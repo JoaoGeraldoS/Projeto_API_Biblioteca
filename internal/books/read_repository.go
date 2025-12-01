@@ -2,6 +2,7 @@ package books
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/authors"
@@ -19,27 +20,42 @@ func (r *BookRepository) GetById(ctx context.Context, id int64) (*Books, error) 
 		FROM book_category bc
 		JOIN books b ON bc.book_id = b.id
 		JOIN categories c ON bc.category_id = c.id
-		JOIN authors a ON b.author_id = a.id`
+		JOIN authors a ON b.author_id = a.id WHERE b.id = ?`
 
 	var (
-		bookID, categoryId, authorId, IDAuthor      int64
-		title, description, content                 string
-		categoryName, authorName, authorDec         string
-		createdAtRaw, updatedAtRaw, createdAtCatRaw time.Time
+		bookID, categoryId, authorId, IDAuthor               int64
+		title, description, content                          string
+		categoryName, authorName, authorDec                  string
+		createdAtRawStr, updatedAtRawStr, createdAtCatRawStr string
 	)
 
 	err := r.db.QueryRowContext(ctx, sql, id).Scan(&bookID, &title, &authorId, &description, &content,
-		&createdAtRaw, &updatedAtRaw, &categoryId, &categoryName, &createdAtCatRaw,
+		&createdAtRawStr, &updatedAtRawStr, &categoryId, &categoryName, &createdAtCatRawStr,
 		&IDAuthor, &authorName, &authorDec,
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	const timeLayoutDB = "2006-01-02 15:04:05"
+	createdAtRaw, err := time.Parse(timeLayoutDB, createdAtRawStr)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao analisar created_at do livro ('%s'): %w", createdAtRawStr, err)
+	}
+
+	updatedAtRaw, err := time.Parse(timeLayoutDB, updatedAtRawStr)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao analisar updated_at do livro ('%s'): %w", updatedAtRawStr, err)
+	}
+
+	createdAtCatRaw, err := time.Parse(timeLayoutDB, createdAtCatRawStr)
+	if err != nil {
+		return nil, fmt.Errorf("erro ao analisar created_at da categoria ('%s'): %w", createdAtCatRawStr, err)
+	}
 
 	createdAt := createdAtRaw.Format("01/01/01 15:04:05")
 	updatedAt := updatedAtRaw.Format("01/01/01 15:04:05")
 	createdAtCat := createdAtCatRaw.Format("01/01/01 15:04:05")
-
-	if err != nil {
-		return nil, err
-	}
 
 	if _, ok := bookMap[bookID]; !ok {
 		bookMap[bookID] = &Books{

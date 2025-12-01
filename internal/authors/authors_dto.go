@@ -1,8 +1,9 @@
 package authors
 
+// @Description Dados para adicionar um autor
 type AuthorRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        string `json:"name" binding:"required" example:"João Pereira"`
+	Description string `json:"description" binding:"required" example:"Escritor"`
 }
 
 type AuthorResponse struct {

@@ -1,17 +1,19 @@
 package users
 
+// @Description Dados necessários para criar usuario
 type UserRequest struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Bio      string `json:"bio"`
-	Username string `json:"username"`
+	Name     string `json:"name" binding:"required" example:"Joaquim Silva"`
+	Email    string `json:"email" binding:"required" example:"joaquim@email.com"`
+	Password string `json:"password" binding:"required" example:"password123"`
+	Bio      string `json:"bio" example:"Meu nome é Joaquim"`
+	Username string `json:"username" binding:"required" example:"joaoquim324"`
 	Role     Roles  `json:"role"`
 }
 
+// @Description Dados necessários para fazer o login
 type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required" example:"joaquim@email.com"`
+	Password string `json:"password" binding:"required" example:"password123"`
 }
 
 type UserResponse struct {

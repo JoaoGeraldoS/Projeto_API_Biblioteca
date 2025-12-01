@@ -51,13 +51,12 @@ func (r *BookRepository) GetAll(ctx context.Context, filter *Filters) ([]Books, 
 		sql += " WHERE " + strings.Join(conditions, " AND ")
 	}
 
-	hasFilter := filter.Title != "" ||
-		filter.Authors != "" ||
-		filter.Category != ""
+	sql += " ORDER BY b.id ASC"
 
-	if !hasFilter && filter.Page > 0 {
-		size := 10
+	if filter.Page >= 1 {
+		size := 10 // Tamanho da página
 		offset := (filter.Page - 1) * size
+
 		sql += " LIMIT ? OFFSET ?"
 		params = append(params, size, offset)
 	}
@@ -70,18 +69,34 @@ func (r *BookRepository) GetAll(ctx context.Context, filter *Filters) ([]Books, 
 
 	for rows.Next() {
 		var (
-			bookID, categoryId, authorId, IDAuthor      int64
-			title, description, content                 string
-			categoryName, authorName, authorDec         string
-			createdAtRaw, updatedAtRaw, createdAtCatRaw time.Time
+			bookID, categoryId, authorId, IDAuthor               int64
+			title, description, content                          string
+			categoryName, authorName, authorDec                  string
+			createdAtRawStr, updatedAtRawStr, createdAtCatRawStr string
 		)
 
 		err := rows.Scan(&bookID, &title, &authorId, &description, &content,
-			&createdAtRaw, &updatedAtRaw, &categoryId, &categoryName, &createdAtCatRaw,
+			&createdAtRawStr, &updatedAtRawStr, &categoryId, &categoryName, &createdAtCatRawStr,
 			&IDAuthor, &authorName, &authorDec,
 		)
 		if err != nil {
 			return nil, err
+		}
+
+		const timeLayoutDB = "2006-01-02 15:04:05"
+		createdAtRaw, err := time.Parse(timeLayoutDB, createdAtRawStr)
+		if err != nil {
+			return nil, fmt.Errorf("erro ao analisar created_at do livro ('%s'): %w", createdAtRawStr, err)
+		}
+
+		updatedAtRaw, err := time.Parse(timeLayoutDB, updatedAtRawStr)
+		if err != nil {
+			return nil, fmt.Errorf("erro ao analisar updated_at do livro ('%s'): %w", updatedAtRawStr, err)
+		}
+
+		createdAtCatRaw, err := time.Parse(timeLayoutDB, createdAtCatRawStr)
+		if err != nil {
+			return nil, fmt.Errorf("erro ao analisar created_at da categoria ('%s'): %w", createdAtCatRawStr, err)
 		}
 
 		createdAt := createdAtRaw.Format("01/01/01 15:04:05")
@@ -114,6 +129,7 @@ func (r *BookRepository) GetAll(ctx context.Context, filter *Filters) ([]Books, 
 			Description: authorDec,
 		}
 	}
+
 	var books []Books
 	for _, book := range booksMap {
 		books = append(books, *book)

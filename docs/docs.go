@@ -220,7 +220,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth // Esta rota está protegida no seu roteador (middleware.RequireRole(\"admin\"))": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Cria uma relação entre um livro existente e uma categoria existente.",
@@ -516,57 +516,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/public/users": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Recebe um objeto JSON UserRequest e salva o usuario no banco de dados.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Cria um novo usuario",
-                "parameters": [
-                    {
-                        "description": "Dados do Novo usuario a ser criado",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/users.UserRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Usuario criado com sucesso",
-                        "schema": {
-                            "$ref": "#/definitions/users.UserRequest"
-                        }
-                    },
-                    "400": {
-                        "description": "Requisição Inválida (JSON malformado ou campo obrigatório ausente)",
-                        "schema": {
-                            "$ref": "#/definitions/middleware.APIError"
-                        }
-                    },
-                    "500": {
-                        "description": "Erro interno do servidor",
-                        "schema": {
-                            "$ref": "#/definitions/middleware.APIError"
-                        }
-                    }
-                }
-            }
-        },
         "/api/users/{id}": {
             "put": {
                 "security": [
@@ -710,7 +659,7 @@ const docTemplate = `{
                 "tags": [
                     "authors"
                 ],
-                "summary": "Obtem autor",
+                "summary": "Obter autor",
                 "parameters": [
                     {
                         "type": "integer",
@@ -895,7 +844,7 @@ const docTemplate = `{
                 "tags": [
                     "categories"
                 ],
-                "summary": "Obtem categoria",
+                "summary": "Obter categoria",
                 "parameters": [
                     {
                         "type": "integer",
@@ -951,6 +900,98 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Recebe um objeto JSON UserRequest e salva o usuario no banco de dados.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Cria um novo usuario",
+                "parameters": [
+                    {
+                        "description": "Dados do Novo usuario a ser criado",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/users.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Usuario criado com sucesso",
+                        "schema": {
+                            "$ref": "#/definitions/users.UserRequest"
+                        }
+                    },
+                    "400": {
+                        "description": "Requisição Inválida (JSON malformado ou campo obrigatório ausente)",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/public/api/users/login": {
+            "post": {
+                "description": "Recebe um objeto JSON LoginRequest.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Faz o login do usuario",
+                "parameters": [
+                    {
+                        "description": "Dados para realizar o login",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/users.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "token do usuario"
+                    },
+                    "400": {
+                        "description": "Requisição Inválida (JSON malformado ou campo obrigatório ausente)",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "schema": {
+                            "$ref": "#/definitions/middleware.APIError"
+                        }
+                    }
+                }
             }
         },
         "/public/api/users/{id}": {
@@ -965,7 +1006,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Obtem usuario",
+                "summary": "Obter usuario",
                 "parameters": [
                     {
                         "type": "integer",
@@ -994,13 +1035,20 @@ const docTemplate = `{
     },
     "definitions": {
         "authors.AuthorRequest": {
+            "description": "Dados para adicionar um autor",
             "type": "object",
+            "required": [
+                "description",
+                "name"
+            ],
             "properties": {
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Escritor"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "João Pereira"
                 }
             }
         },
@@ -1034,30 +1082,48 @@ const docTemplate = `{
             }
         },
         "books.BookCategoryRequest": {
+            "description": "Dados necessários pra fazer o relacionamento",
             "type": "object",
+            "required": [
+                "book_id",
+                "category_id"
+            ],
             "properties": {
                 "book_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "category_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
         "books.BookRequest": {
+            "description": "Dados necessários para criar um livro",
             "type": "object",
+            "required": [
+                "author_id",
+                "content",
+                "description",
+                "title"
+            ],
             "properties": {
                 "author_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "content": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "A menina é o porquinho"
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Esse livro é sobre conteudo infantil"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "A menina e o porquinho"
                 }
             }
         },
@@ -1112,10 +1178,15 @@ const docTemplate = `{
             }
         },
         "categories.CategoryRequest": {
+            "description": "Dados para criar categoria",
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Infantil"
                 }
             }
         },
@@ -1148,6 +1219,24 @@ const docTemplate = `{
                 }
             }
         },
+        "users.LoginRequest": {
+            "description": "Dados necessários para fazer o login",
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "joaquim@email.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "password123"
+                }
+            }
+        },
         "users.Roles": {
             "type": "string",
             "enum": [
@@ -1160,25 +1249,37 @@ const docTemplate = `{
             ]
         },
         "users.UserRequest": {
+            "description": "Dados necessários para criar usuario",
             "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password",
+                "username"
+            ],
             "properties": {
                 "bio": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Meu nome é Joaquim"
                 },
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "joaquim@email.com"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Joaquim Silva"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "password123"
                 },
                 "role": {
                     "$ref": "#/definitions/users.Roles"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "joaoquim324"
                 }
             }
         },
@@ -1213,7 +1314,7 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
-        "BearerAuth": {
+        "ApiKeyAuth": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

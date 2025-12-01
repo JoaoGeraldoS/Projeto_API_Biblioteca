@@ -1,7 +1,8 @@
 package categories
 
+// @Description Dados para criar categoria
 type CategoryRequest struct {
-	Name string `json:"name"`
+	Name string `json:"name" binding:"required" example:"Infantil"`
 }
 
 type CategoryResponse struct {

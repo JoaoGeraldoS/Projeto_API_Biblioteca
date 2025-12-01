@@ -6,16 +6,18 @@ import (
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/categories"
 )
 
+// @Description Dados necessários para criar um livro
 type BookRequest struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Content     string `json:"content"`
-	AuthorID    int64  `json:"author_id"`
+	Title       string `json:"title" binding:"required" example:"A menina e o porquinho"`
+	Description string `json:"description" binding:"required" example:"Esse livro é sobre conteudo infantil"`
+	Content     string `json:"content" binding:"required" example:"A menina é o porquinho"`
+	AuthorID    int64  `json:"author_id" binding:"required" example:"1"`
 }
 
+// @Description Dados necessários pra fazer o relacionamento
 type BookCategoryRequest struct {
-	BookID     int64 `json:"book_id"`
-	CategoryID int64 `json:"category_id"`
+	BookID     int64 `json:"book_id" binding:"required" example:"1"`
+	CategoryID int64 `json:"category_id" binding:"required" example:"1"`
 }
 
 type BookResponse struct {

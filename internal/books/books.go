@@ -46,9 +46,5 @@ func (b *Books) Validate() error {
 		return errors.New("descrição invalida")
 	}
 
-	if b.Authors.Name == "" {
-		return errors.New("autor invalido")
-	}
-
 	return nil
 }

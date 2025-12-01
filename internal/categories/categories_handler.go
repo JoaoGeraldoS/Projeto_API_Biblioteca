@@ -74,7 +74,7 @@ func (h *CategoryHandler) ReadCategories(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary Obtem categoria
+// @Summary Obter categoria
 // @Description Retorna uma categorias
 // @Tags categories
 // @Accept json

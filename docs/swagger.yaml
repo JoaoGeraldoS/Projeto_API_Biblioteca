@@ -1,10 +1,16 @@
 definitions:
   authors.AuthorRequest:
+    description: Dados para adicionar um autor
     properties:
       description:
+        example: Escritor
         type: string
       name:
+        example: João Pereira
         type: string
+    required:
+    - description
+    - name
     type: object
   authors.AuthorResponse:
     properties:
@@ -26,22 +32,38 @@ definitions:
         type: string
     type: object
   books.BookCategoryRequest:
+    description: Dados necessários pra fazer o relacionamento
     properties:
       book_id:
+        example: 1
         type: integer
       category_id:
+        example: 1
         type: integer
+    required:
+    - book_id
+    - category_id
     type: object
   books.BookRequest:
+    description: Dados necessários para criar um livro
     properties:
       author_id:
+        example: 1
         type: integer
       content:
+        example: A menina é o porquinho
         type: string
       description:
+        example: Esse livro é sobre conteudo infantil
         type: string
       title:
+        example: A menina e o porquinho
         type: string
+    required:
+    - author_id
+    - content
+    - description
+    - title
     type: object
   books.BookResponse:
     properties:
@@ -77,9 +99,13 @@ definitions:
         type: string
     type: object
   categories.CategoryRequest:
+    description: Dados para criar categoria
     properties:
       name:
+        example: Infantil
         type: string
+    required:
+    - name
     type: object
   categories.CategoryResponse:
     properties:
@@ -100,6 +126,19 @@ definitions:
       status:
         type: integer
     type: object
+  users.LoginRequest:
+    description: Dados necessários para fazer o login
+    properties:
+      email:
+        example: joaquim@email.com
+        type: string
+      password:
+        example: password123
+        type: string
+    required:
+    - email
+    - password
+    type: object
   users.Roles:
     enum:
     - user
@@ -109,19 +148,30 @@ definitions:
     - User
     - Admin
   users.UserRequest:
+    description: Dados necessários para criar usuario
     properties:
       bio:
+        example: Meu nome é Joaquim
         type: string
       email:
+        example: joaquim@email.com
         type: string
       name:
+        example: Joaquim Silva
         type: string
       password:
+        example: password123
         type: string
       role:
         $ref: '#/definitions/users.Roles'
       username:
+        example: joaoquim324
         type: string
+    required:
+    - email
+    - name
+    - password
+    - username
     type: object
   users.UserResponse:
     properties:
@@ -371,7 +421,7 @@ paths:
           schema:
             $ref: '#/definitions/middleware.APIError'
       security:
-      - ApiKeyAuth // Esta rota está protegida no seu roteador (middleware.RequireRole("admin")): []
+      - ApiKeyAuth: []
       summary: Associa um livro a uma categoria
       tags:
       - books
@@ -472,39 +522,6 @@ paths:
       summary: Atualiza uma categoria
       tags:
       - categories
-  /api/public/users:
-    post:
-      consumes:
-      - application/json
-      description: Recebe um objeto JSON UserRequest e salva o usuario no banco de
-        dados.
-      parameters:
-      - description: Dados do Novo usuario a ser criado
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/users.UserRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Usuario criado com sucesso
-          schema:
-            $ref: '#/definitions/users.UserRequest'
-        "400":
-          description: Requisição Inválida (JSON malformado ou campo obrigatório ausente)
-          schema:
-            $ref: '#/definitions/middleware.APIError'
-        "500":
-          description: Erro interno do servidor
-          schema:
-            $ref: '#/definitions/middleware.APIError'
-      security:
-      - ApiKeyAuth: []
-      summary: Cria um novo usuario
-      tags:
-      - users
   /api/users/{id}:
     delete:
       consumes:
@@ -612,7 +629,7 @@ paths:
           description: Erro interno
           schema:
             $ref: '#/definitions/middleware.APIError'
-      summary: Obtem autor
+      summary: Obter autor
       tags:
       - authors
   /public/api/books:
@@ -734,7 +751,7 @@ paths:
           description: Erro interno
           schema:
             $ref: '#/definitions/middleware.APIError'
-      summary: Obtem categoria
+      summary: Obter categoria
       tags:
       - categories
   /public/api/users:
@@ -756,6 +773,38 @@ paths:
           schema:
             $ref: '#/definitions/middleware.APIError'
       summary: Listar usuarios
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Recebe um objeto JSON UserRequest e salva o usuario no banco de
+        dados.
+      parameters:
+      - description: Dados do Novo usuario a ser criado
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/users.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Usuario criado com sucesso
+          schema:
+            $ref: '#/definitions/users.UserRequest'
+        "400":
+          description: Requisição Inválida (JSON malformado ou campo obrigatório ausente)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Cria um novo usuario
       tags:
       - users
   /public/api/users/{id}:
@@ -780,11 +829,39 @@ paths:
           description: Erro interno
           schema:
             $ref: '#/definitions/middleware.APIError'
-      summary: Obtem usuario
+      summary: Obter usuario
+      tags:
+      - users
+  /public/api/users/login:
+    post:
+      consumes:
+      - application/json
+      description: Recebe um objeto JSON LoginRequest.
+      parameters:
+      - description: Dados para realizar o login
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/users.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token do usuario
+        "400":
+          description: Requisição Inválida (JSON malformado ou campo obrigatório ausente)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      summary: Faz o login do usuario
       tags:
       - users
 securityDefinitions:
-  BearerAuth:
+  ApiKeyAuth:
     in: header
     name: Authorization
     type: apiKey

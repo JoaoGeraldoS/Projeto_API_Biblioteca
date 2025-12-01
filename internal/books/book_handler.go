@@ -2,6 +2,7 @@ package books
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -49,6 +50,7 @@ func (h *BookHandler) CreateBook(c *gin.Context) {
 	}
 
 	if err := h.service.Create(ctx, newBook); err != nil {
+		fmt.Println(err)
 		c.Error(middleware.InternalErr)
 		return
 	}
@@ -131,6 +133,7 @@ func (h *BookHandler) ReadBook(c *gin.Context) {
 
 	book, err := h.service.GetById(ctx, id)
 	if err != nil {
+		fmt.Println(err)
 		c.Error(middleware.NotFound)
 		return
 	}
@@ -211,7 +214,7 @@ func (h *BookHandler) DeleteBook(c *gin.Context) {
 // @Tags books
 // @Accept  json
 // @Produce json
-// @Security ApiKeyAuth // Esta rota está protegida no seu roteador (middleware.RequireRole("admin"))
+// @Security ApiKeyAuth
 // @Param   data body BookCategoryRequest true "IDs do Livro e da Categoria a serem relacionados"
 // @Success 200 "OK, Relação criada com sucesso"
 // @Failure 400 {object} middleware.APIError "Requisição Inválida (JSON malformado, campo ausente ou tipo errado)"

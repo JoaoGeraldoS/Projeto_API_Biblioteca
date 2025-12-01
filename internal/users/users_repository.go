@@ -60,17 +60,21 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]Users, error) {
 }
 
 func (r *UserRepository) GetById(ctx context.Context, id int64) (*Users, error) {
-	query := `SELECT id, name, email, bio FROM users WHERE id = ?`
+	query := `SELECT id, name, email, bio, created_at FROM users WHERE id = ?`
 
 	var user Users
-
-	var createdAtRaw, updatedAtRaw time.Time
-	createdAt := createdAtRaw.Format("01/01/01 15:04:05")
-	updatedAt := updatedAtRaw.Format("01/01/01 15:04:05")
+	var tempBio sql.NullString
 
 	row := r.db.QueryRowContext(ctx, query, id).Scan(
-		&user.ID, &user.Name, &user.Email, &user.Bio, &createdAt, &updatedAt,
+		&user.ID, &user.Name, &user.Email, &tempBio, &user.CreatedAt,
 	)
+
+	if tempBio.Valid {
+		user.Bio = tempBio.String
+	} else {
+		user.Bio = ""
+	}
+
 	if row != nil {
 		return nil, row
 	}

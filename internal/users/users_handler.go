@@ -28,12 +28,13 @@ func NewUsersHandler(svc UserService) *UserHandler {
 // @Failure 400 {object} middleware.APIError "Requisição Inválida (JSON malformado ou campo obrigatório ausente)"
 // @Failure 500 {object} middleware.APIError "Erro interno do servidor"
 // @Security ApiKeyAuth
-// @Router /api/public/users [post]
+// @Router /public/api/users [post]
 func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	var dtoReq UserRequest
 
 	if err := c.ShouldBindJSON(&dtoReq); err != nil {
+		fmt.Println(err)
 		c.Error(middleware.BadRequest)
 		return
 	}
@@ -82,7 +83,7 @@ func (h *UserHandler) ReadAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary Obtem usuario
+// @Summary Obter usuario
 // @Description Retorna um usuario
 // @Tags users
 // @Accept json
@@ -103,6 +104,7 @@ func (h *UserHandler) ReadUser(c *gin.Context) {
 
 	result, err := h.svc.GetById(ctx, id)
 	if err != nil {
+		fmt.Println(err)
 		c.Error(middleware.NotFound)
 		return
 	}
@@ -176,6 +178,16 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusNoContent, "")
 }
 
+// @Summary Faz o login do usuario
+// @Description Recebe um objeto JSON LoginRequest.
+// @Tags users
+// @Accept  json
+// @Produce json
+// @Param   user body LoginRequest true "Dados para realizar o login"
+// @Success 200 "token do usuario"
+// @Failure 400 {object} middleware.APIError "Requisição Inválida (JSON malformado ou campo obrigatório ausente)"
+// @Failure 500 {object} middleware.APIError "Erro interno do servidor"
+// @Router /public/api/users/login [post]
 func (h *UserHandler) LoginUser(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*5)
 	defer cancel()
