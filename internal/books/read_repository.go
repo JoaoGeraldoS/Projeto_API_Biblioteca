@@ -37,7 +37,7 @@ func (r *BookRepository) GetById(ctx context.Context, id int64) (*Books, error) 
 		return nil, err
 	}
 
-	const timeLayoutDB = "2006-01-02 15:04:05"
+	const timeLayoutDB = "2006-01-02T15:04:05Z"
 	createdAtRaw, err := time.Parse(timeLayoutDB, createdAtRawStr)
 	if err != nil {
 		return nil, fmt.Errorf("erro ao analisar created_at do livro ('%s'): %w", createdAtRawStr, err)

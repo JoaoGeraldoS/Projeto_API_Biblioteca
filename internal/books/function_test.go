@@ -15,7 +15,8 @@ import (
 func setupTest(mockBookSvc BookServcie) (*gin.Engine, *httptest.ResponseRecorder) {
 	gin.SetMode(gin.TestMode)
 
-	handler := NewBookHandler(mockBookSvc, &zap.Logger{})
+	testLogger := zap.NewNop()
+	handler := NewBookHandler(mockBookSvc, testLogger)
 	router := gin.New()
 
 	router.Use(middleware.ErrorHandler())
@@ -45,15 +46,20 @@ var updateBookRequest = BookRequest{
 }
 
 var expectedBody = `{
-	"ID":0,
-	"Title":"A menina e o proquinho",
-	"Description":"Livro infantil",
-	"Content":"A menina e o porquinho",
-	"CreatedAt":"",
-	"UpdatedAt":"",
-	"Categories":null,
-	"AuthorID":1,
-	"Authors":{"ID":0,"Name":"","Description":""}}
+  "id": 0,
+  "title": "A menina e o proquinho",
+  "author_id": 1,
+  "description": "Livro infantil",
+  "content": "A menina e o porquinho",
+  "created_at": "",
+  "updated_at": "",
+  "categories": null,
+  "author": {
+    "ID": 0,
+    "Name": "",
+    "Description": ""
+  }
+}
 `
 
 func createRequest(t *testing.T, data interface{}) io.Reader {

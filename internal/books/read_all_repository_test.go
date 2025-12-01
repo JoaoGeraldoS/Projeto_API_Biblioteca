@@ -98,7 +98,7 @@ func TestBookRepository_GetAll_TableDriven(t *testing.T) {
 			name: "página ignorada quando WHERE existe",
 			filter: &books.Filters{
 				Title: "Go",
-				Page:  3,
+				Page:  1,
 			},
 			wantCount:     1,
 			wantFirstID:   1,

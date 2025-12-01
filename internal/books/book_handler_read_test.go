@@ -21,7 +21,7 @@ func TestBookHandler_ReadAllBooks(t *testing.T) {
 	}{
 		{
 			name:        "sucesso_listar_livros",
-			queryParams: "?page=1&title=&author=&category=",
+			queryParams: "?page=2&title=&author=&category=",
 			mockReturn: []Books{
 				{ID: 1, Title: "Livro 1"},
 				{ID: 2, Title: "Livro 2"},
