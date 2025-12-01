@@ -18,6 +18,17 @@ func NewUsersHandler(svc UserService) *UserHandler {
 	return &UserHandler{svc: svc}
 }
 
+// @Summary Cria um novo usuario
+// @Description Recebe um objeto JSON UserRequest e salva o usuario no banco de dados.
+// @Tags users
+// @Accept  json
+// @Produce json
+// @Param   user body UserRequest true "Dados do Novo usuario a ser criado"
+// @Success 201 {object} UserRequest "Usuario criado com sucesso"
+// @Failure 400 {object} middleware.APIError "Requisição Inválida (JSON malformado ou campo obrigatório ausente)"
+// @Failure 500 {object} middleware.APIError "Erro interno do servidor"
+// @Security ApiKeyAuth
+// @Router /api/public/users [post]
 func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	var dtoReq UserRequest
@@ -44,6 +55,14 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 }
 
+// @Summary Listar usuarios
+// @Description Retorna uma lista de usuarios
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 200 {array} UserResponse
+// @Failure 500 {object} middleware.APIError "Erro interno"
+// @Router /public/api/users [get]
 func (h *UserHandler) ReadAllUsers(c *gin.Context) {
 
 	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*5)
@@ -63,6 +82,15 @@ func (h *UserHandler) ReadAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// @Summary Obtem usuario
+// @Description Retorna um usuario
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path int true "Recebe o id do usuario"
+// @Success 200 {object} UserResponse
+// @Failure 500 {object} middleware.APIError "Erro interno"
+// @Router /public/api/users/{id} [get]
 func (h *UserHandler) ReadUser(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
@@ -82,6 +110,18 @@ func (h *UserHandler) ReadUser(c *gin.Context) {
 	c.JSON(http.StatusOK, ToResponse(result))
 }
 
+// @Summary Atualiza um usuario
+// @Description Recebe um objeto JSON UserRequest e atualiza o usuario no banco de dados.
+// @Tags users
+// @Accept  json
+// @Produce json
+// @Param id path int true "Recebe o id da usuario"
+// @Param   user body UserRequest true "Dados do novo usuario a ser atualizado"
+// @Success 204  "Usuario atualizado com sucesso"
+// @Failure 400 {object} middleware.APIError "Requisição Inválida (JSON malformado ou campo obrigatório ausente)"
+// @Failure 500 {object} middleware.APIError "Erro interno do servidor"
+// @Security ApiKeyAuth
+// @Router /api/users/{id} [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
@@ -110,6 +150,17 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusNoContent, "")
 }
 
+// @Summary Exclui um usuario pelo ID
+// @Description Exclui um usuario específico do banco de dados.
+// @Tags users
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param   id path int true "ID do usuario a ser excluído"
+// @Success 204 "Nenhum Conteúdo"
+// @Failure 400 {object} middleware.APIError "Requisição Inválida (ID com formato incorreto)"
+// @Failure 404 {object} middleware.APIError "Livro não encontrado"
+// @Router /api/users/{id} [delete]
 func (h *UserHandler) DeleteUser(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {

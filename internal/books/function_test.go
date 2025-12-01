@@ -9,12 +9,13 @@ import (
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/middleware"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func setupTest(mockBookSvc BookServcie) (*gin.Engine, *httptest.ResponseRecorder) {
 	gin.SetMode(gin.TestMode)
 
-	handler := NewBookHandler(mockBookSvc)
+	handler := NewBookHandler(mockBookSvc, &zap.Logger{})
 	router := gin.New()
 
 	router.Use(middleware.ErrorHandler())

@@ -9,6 +9,7 @@ import (
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/middleware"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/users"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type App struct {
@@ -18,10 +19,10 @@ type App struct {
 	UserHandler     *users.UserHandler
 }
 
-func NewApp(db *sql.DB) *App {
+func NewApp(db *sql.DB, logApp *zap.Logger) *App {
 	bookRepo := books.NewBookRepository(db)
 	bookSvc := books.NewBookService(bookRepo)
-	bookHandler := books.NewBookHandler(bookSvc)
+	bookHandler := books.NewBookHandler(bookSvc, logApp)
 
 	authRepo := authors.NewAuthorsRepository(db)
 	authSvc := authors.NewAuthorsService(authRepo)
@@ -43,10 +44,10 @@ func NewApp(db *sql.DB) *App {
 	}
 }
 
-func Routers(db *sql.DB) *gin.Engine {
+func Routers(db *sql.DB, logApp *zap.Logger) *gin.Engine {
 	r := gin.Default()
 
-	app := NewApp(db)
+	app := NewApp(db, logApp)
 
 	r.Use(middleware.ErrorHandler())
 

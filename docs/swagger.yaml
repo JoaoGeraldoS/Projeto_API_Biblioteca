@@ -1,0 +1,791 @@
+definitions:
+  authors.AuthorRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  authors.AuthorResponse:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  authors.Authors:
+    properties:
+      description:
+        type: string
+      id:
+        format: int64
+        type: integer
+      name:
+        type: string
+    type: object
+  books.BookCategoryRequest:
+    properties:
+      book_id:
+        type: integer
+      category_id:
+        type: integer
+    type: object
+  books.BookRequest:
+    properties:
+      author_id:
+        type: integer
+      content:
+        type: string
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  books.BookResponse:
+    properties:
+      author:
+        $ref: '#/definitions/authors.Authors'
+      author_id:
+        type: integer
+      categories:
+        items:
+          $ref: '#/definitions/categories.Category'
+        type: array
+      content:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  categories.Category:
+    properties:
+      createdAT:
+        type: string
+      id:
+        format: int64
+        type: integer
+      name:
+        type: string
+    type: object
+  categories.CategoryRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  categories.CategoryResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  middleware.APIError:
+    description: Erro padronizado de resposta.
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  users.Roles:
+    enum:
+    - user
+    - admin
+    type: string
+    x-enum-varnames:
+    - User
+    - Admin
+  users.UserRequest:
+    properties:
+      bio:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        $ref: '#/definitions/users.Roles'
+      username:
+        type: string
+    type: object
+  users.UserResponse:
+    properties:
+      bio:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      role:
+        $ref: '#/definitions/users.Roles'
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Esta é a API de gerenciamento de livros da Biblioteca.
+  title: API da Biblioteca
+  version: "1.0"
+paths:
+  /api/authors:
+    post:
+      consumes:
+      - application/json
+      description: Recebe um objeto JSON AuthorRequest e salva o autor no banco de
+        dados.
+      parameters:
+      - description: Dados do novo autor a ser criado
+        in: body
+        name: authors
+        required: true
+        schema:
+          $ref: '#/definitions/authors.AuthorRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Autor criada com sucesso
+          schema:
+            $ref: '#/definitions/authors.AuthorRequest'
+        "400":
+          description: Requisição Inválida (JSON malformado ou campo obrigatório ausente)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Cria um novo autor
+      tags:
+      - authors
+  /api/authors/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Exclui um autor específico do banco de dados.
+      parameters:
+      - description: ID do autor a ser excluído
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Nenhum Conteúdo
+        "400":
+          description: Requisição Inválida (ID com formato incorreto)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "404":
+          description: Livro não encontrado
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Exclui um autor pelo ID
+      tags:
+      - authors
+    put:
+      consumes:
+      - application/json
+      description: Recebe um objeto JSON AuthorRequest e atualiza o autor no banco
+        de dados.
+      parameters:
+      - description: Recebe o id do autor
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados do Novo autor a ser atualizado
+        in: body
+        name: authors
+        required: true
+        schema:
+          $ref: '#/definitions/authors.AuthorRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Autor atualizado com sucesso
+        "400":
+          description: Requisição Inválida (JSON malformado ou campo obrigatório ausente)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Atualiza um autor
+      tags:
+      - authors
+  /api/books:
+    post:
+      consumes:
+      - application/json
+      description: Recebe um objeto JSON BookRequest e salva o livro no banco de dados.
+      parameters:
+      - description: Dados do Novo Livro a ser criado
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/books.BookRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Livro criado com sucesso
+          schema:
+            $ref: '#/definitions/books.BookRequest'
+        "400":
+          description: Requisição Inválida (JSON malformado ou campo obrigatório ausente)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Cria um novo livro
+      tags:
+      - books
+  /api/books/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Exclui um livro específico do banco de dados.
+      parameters:
+      - description: ID do Livro a ser excluído
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Nenhum Conteúdo
+        "400":
+          description: Requisição Inválida (ID com formato incorreto)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "404":
+          description: Livro não encontrado
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Exclui um livro pelo ID
+      tags:
+      - books
+    put:
+      consumes:
+      - application/json
+      description: Recebe um objeto JSON BookRequest e atualiza o livro no banco de
+        dados.
+      parameters:
+      - description: Recebe o id do livro
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados do Novo Livro a ser atualizado
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/books.BookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Livro atualizado com sucesso
+          schema:
+            $ref: '#/definitions/books.BookRequest'
+        "400":
+          description: Requisição Inválida (JSON malformado ou campo obrigatório ausente)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Atualiza um livro
+      tags:
+      - books
+  /api/books/relation:
+    post:
+      consumes:
+      - application/json
+      description: Cria uma relação entre um livro existente e uma categoria existente.
+      parameters:
+      - description: IDs do Livro e da Categoria a serem relacionados
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/books.BookCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK, Relação criada com sucesso
+        "400":
+          description: Requisição Inválida (JSON malformado, campo ausente ou tipo
+            errado)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno do servidor (Erro na criação da relação)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth // Esta rota está protegida no seu roteador (middleware.RequireRole("admin")): []
+      summary: Associa um livro a uma categoria
+      tags:
+      - books
+  /api/categories:
+    post:
+      consumes:
+      - application/json
+      description: Recebe um objeto JSON CategoryRequest e salva a categoria no banco
+        de dados.
+      parameters:
+      - description: Dados da Nova categoria a ser criado
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/categories.CategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Categoria criada com sucesso
+          schema:
+            $ref: '#/definitions/categories.CategoryRequest'
+        "400":
+          description: Requisição Inválida (JSON malformado ou campo obrigatório ausente)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Cria um nova categoria
+      tags:
+      - categories
+  /api/categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Exclui uma categoria específica do banco de dados.
+      parameters:
+      - description: ID da categoria a ser excluída
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Nenhum Conteúdo
+        "400":
+          description: Requisição Inválida (ID com formato incorreto)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "404":
+          description: Livro não encontrado
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Exclui uma categoria pelo ID
+      tags:
+      - categories
+    put:
+      consumes:
+      - application/json
+      description: Recebe um objeto JSON CategoryRequest e atualiza a categoria no
+        banco de dados.
+      parameters:
+      - description: Recebe o id da categoria
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados da nova categoria a ser atualizada
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/categories.CategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Categoria atualizada com sucesso
+        "400":
+          description: Requisição Inválida (JSON malformado ou campo obrigatório ausente)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Atualiza uma categoria
+      tags:
+      - categories
+  /api/public/users:
+    post:
+      consumes:
+      - application/json
+      description: Recebe um objeto JSON UserRequest e salva o usuario no banco de
+        dados.
+      parameters:
+      - description: Dados do Novo usuario a ser criado
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/users.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Usuario criado com sucesso
+          schema:
+            $ref: '#/definitions/users.UserRequest'
+        "400":
+          description: Requisição Inválida (JSON malformado ou campo obrigatório ausente)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Cria um novo usuario
+      tags:
+      - users
+  /api/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Exclui um usuario específico do banco de dados.
+      parameters:
+      - description: ID do usuario a ser excluído
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Nenhum Conteúdo
+        "400":
+          description: Requisição Inválida (ID com formato incorreto)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "404":
+          description: Livro não encontrado
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Exclui um usuario pelo ID
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Recebe um objeto JSON UserRequest e atualiza o usuario no banco
+        de dados.
+      parameters:
+      - description: Recebe o id da usuario
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados do novo usuario a ser atualizado
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/users.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Usuario atualizado com sucesso
+        "400":
+          description: Requisição Inválida (JSON malformado ou campo obrigatório ausente)
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno do servidor
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      security:
+      - ApiKeyAuth: []
+      summary: Atualiza um usuario
+      tags:
+      - users
+  /public/api/authors:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista de autores
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/authors.AuthorResponse'
+            type: array
+        "500":
+          description: Erro interno
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      summary: Listar autores
+      tags:
+      - authors
+  /public/api/authors/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna um autor
+      parameters:
+      - description: Recebe o id do autor
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authors.AuthorResponse'
+        "500":
+          description: Erro interno
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      summary: Obtem autor
+      tags:
+      - authors
+  /public/api/books:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista de livros filtrando por título, autor e categoria.
+      parameters:
+      - description: Página
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Filtrar por título
+        in: query
+        name: title
+        type: string
+      - description: Filtrar por autor
+        in: query
+        name: author
+        type: string
+      - description: Filtrar por categoria
+        in: query
+        name: category
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/books.BookResponse'
+            type: array
+        "400":
+          description: Parâmetros inválidos
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      summary: Listar livros
+      tags:
+      - books
+  /public/api/books/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna um livro específico.
+      parameters:
+      - description: ID do livro
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/books.BookResponse'
+        "400":
+          description: ID inválido
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "404":
+          description: Livro não encontrado
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+        "500":
+          description: Erro interno
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      summary: Obter livro
+      tags:
+      - books
+  /public/api/categories:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista de categorias
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/categories.CategoryResponse'
+            type: array
+        "500":
+          description: Erro interno
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      summary: Listar categorias
+      tags:
+      - categories
+  /public/api/categories/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma categorias
+      parameters:
+      - description: Recebe o id da categoria
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/categories.CategoryResponse'
+        "500":
+          description: Erro interno
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      summary: Obtem categoria
+      tags:
+      - categories
+  /public/api/users:
+    get:
+      consumes:
+      - application/json
+      description: Retorna uma lista de usuarios
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/users.UserResponse'
+            type: array
+        "500":
+          description: Erro interno
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      summary: Listar usuarios
+      tags:
+      - users
+  /public/api/users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retorna um usuario
+      parameters:
+      - description: Recebe o id do usuario
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserResponse'
+        "500":
+          description: Erro interno
+          schema:
+            $ref: '#/definitions/middleware.APIError'
+      summary: Obtem usuario
+      tags:
+      - users
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

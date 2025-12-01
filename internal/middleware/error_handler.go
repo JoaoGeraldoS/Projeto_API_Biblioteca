@@ -7,6 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// APIError representa a estrutura de erro retornada pela API.
+// @Description Erro padronizado de resposta.
+//
+//	@Example {
+//	  "status": 400,
+//	  "code": "BAD_REQUEST",
+//	  "message": "Parâmetro inválido",
+//	  "path": "/books"
+//	}
 type APIError struct {
 	Status  int    `json:"status"`
 	Code    string `json:"code"`

@@ -2,10 +2,17 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/database"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/infra/routes"
+	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/logger"
 	"github.com/joho/godotenv"
+
+	_ "github.com/JoaoGeraldoS/Projeto_API_Biblioteca/docs"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func init() {
@@ -15,10 +22,31 @@ func init() {
 	}
 }
 
+// @title API da Biblioteca
+// @version 1.0
+// @description Esta é a API de gerenciamento de livros da Biblioteca.
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
+// @host localhost:8080
 func main() {
+	loggerEnv := os.Getenv("LOGGER_APP")
+
+	loggerApp := logger.NewLogger(loggerEnv)
+	defer loggerApp.Sync()
+
+	if loggerEnv != "development" {
+		loggerApp.Info("Log em modo de PRODUÇÃO")
+	} else {
+		loggerApp.Debug("Log em mode de DESENVOLVIMENTO")
+	}
+
 	db := database.Connection()
 
-	r := routes.Routers(db)
+	r := routes.Routers(db, loggerApp)
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	log.Println("Server on :8080")
 	r.Run(":8080")

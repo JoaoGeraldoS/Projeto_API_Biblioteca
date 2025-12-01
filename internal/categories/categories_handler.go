@@ -15,6 +15,17 @@ func NewCategoryHandler(svc CategoryService) *CategoryHandler {
 	return &CategoryHandler{svc: svc}
 }
 
+// @Summary Cria um nova categoria
+// @Description Recebe um objeto JSON CategoryRequest e salva a categoria no banco de dados.
+// @Tags categories
+// @Accept  json
+// @Produce json
+// @Param   category body CategoryRequest true "Dados da Nova categoria a ser criado"
+// @Success 201 {object} CategoryRequest "Categoria criada com sucesso"
+// @Failure 400 {object} middleware.APIError "Requisição Inválida (JSON malformado ou campo obrigatório ausente)"
+// @Failure 500 {object} middleware.APIError "Erro interno do servidor"
+// @Security ApiKeyAuth
+// @Router /api/categories [post]
 func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -39,6 +50,14 @@ func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 	c.JSON(http.StatusCreated, ToResponse(category))
 }
 
+// @Summary Listar categorias
+// @Description Retorna uma lista de categorias
+// @Tags categories
+// @Accept json
+// @Produce json
+// @Success 200 {array} CategoryResponse
+// @Failure 500 {object} middleware.APIError "Erro interno"
+// @Router /public/api/categories [get]
 func (h *CategoryHandler) ReadCategories(c *gin.Context) {
 	allCategories, err := h.svc.GetAll(c.Request.Context())
 	if err != nil {
@@ -55,6 +74,15 @@ func (h *CategoryHandler) ReadCategories(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// @Summary Obtem categoria
+// @Description Retorna uma categorias
+// @Tags categories
+// @Accept json
+// @Produce json
+// @Param id path int true "Recebe o id da categoria"
+// @Success 200 {object} CategoryResponse
+// @Failure 500 {object} middleware.APIError "Erro interno"
+// @Router /public/api/categories/{id} [get]
 func (h *CategoryHandler) ReadCategory(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
@@ -72,6 +100,18 @@ func (h *CategoryHandler) ReadCategory(c *gin.Context) {
 	c.JSON(http.StatusOK, ToResponse(category))
 }
 
+// @Summary Atualiza uma categoria
+// @Description Recebe um objeto JSON CategoryRequest e atualiza a categoria no banco de dados.
+// @Tags categories
+// @Accept  json
+// @Produce json
+// @Param id path int true "Recebe o id da categoria"
+// @Param   category body CategoryRequest true "Dados da nova categoria a ser atualizada"
+// @Success 204  "Categoria atualizada com sucesso"
+// @Failure 400 {object} middleware.APIError "Requisição Inválida (JSON malformado ou campo obrigatório ausente)"
+// @Failure 500 {object} middleware.APIError "Erro interno do servidor"
+// @Security ApiKeyAuth
+// @Router /api/categories/{id} [put]
 func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
@@ -100,6 +140,17 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 	c.JSON(http.StatusNoContent, "")
 }
 
+// @Summary Exclui uma categoria pelo ID
+// @Description Exclui uma categoria específica do banco de dados.
+// @Tags categories
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param   id path int true "ID da categoria a ser excluída"
+// @Success 204 "Nenhum Conteúdo"
+// @Failure 400 {object} middleware.APIError "Requisição Inválida (ID com formato incorreto)"
+// @Failure 404 {object} middleware.APIError "Livro não encontrado"
+// @Router /api/categories/{id} [delete]
 func (h *CategoryHandler) DeleteCategory(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
