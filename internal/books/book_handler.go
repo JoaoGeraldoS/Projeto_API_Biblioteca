@@ -181,7 +181,7 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 	}
 
 	c.Status(http.StatusNoContent)
-	return
+
 }
 
 // @Summary Exclui um livro pelo ID
