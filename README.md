@@ -53,7 +53,7 @@ go mod tidy
 ```
 ---  
 ### 3. Configure as variáveis de ambiente
-Crie um arquivo ~~~ .env ~~~
+Crie um arquivo 
 ``` bash
 DATABASE_URL: "user:pass@tcp(localhost:3306)/library"
 SECRET_KEY: "secret key"
@@ -107,8 +107,10 @@ POST /api/books/relation
 
 ---
 ## Exempls de payload
-``` json 
+
 Criar livro
+``` json 
+
 {
     "title": "A menina e o porquinho",
     "description": "Esse livro é sobre conteudo infantil",
@@ -116,8 +118,10 @@ Criar livro
     "author_id": 1
 }
 ```
-``` json
+
 Ler livro (response)
+``` json
+
 {
     "author": {
         "description": "string",
@@ -142,6 +146,7 @@ Ler livro (response)
 ```
 ---
 ## Middleware de Logs
+
 - Method
 - Path
 - Status
@@ -152,6 +157,7 @@ Ler livro (response)
 ---
 
 ## RoadMap
+
 - Melhorar corbetura de tests
 - Implementar Dockerfile
 - Melhorar documentação
