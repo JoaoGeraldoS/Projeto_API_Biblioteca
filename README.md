@@ -21,7 +21,7 @@ Fornece endpoints para cadastro, leitura, atualização, remoção e relacioname
 ## Estrutura do projeto
 
 - cmd/
-main.go
+    - main.go
 
 - internal/
     - authors/
