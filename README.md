@@ -51,7 +51,7 @@ cd Projeto_API_Biblioteca
 ``` bash
 go mod tidy
 ```
----  
+
 ### 3. Configure as variáveis de ambiente
 Crie um arquivo 
 ``` bash
@@ -59,7 +59,7 @@ DATABASE_URL: "user:pass@tcp(localhost:3306)/library"
 SECRET_KEY: "secret key"
 LOGGER_APP: "development" # production
 ```
----
+
 ### 4. Subir o banco de dados (MySQL via Docker)
 ``` bash
 docker compose up
@@ -69,13 +69,11 @@ docker compose up
 ``` bash
 migrate -path . -database "mysql://user:pass@tcp(localhost:3306)/library" up
 ```
----
+
 ### 6. Rode a aplicação
 ``` bash
 go run cmd/main.go
 ```
-
----
 ### 7. Testes
 Test coverage: atualmente apenas o módulo de livros possui testes.
 Os módulos restantes seguem o mesmo padrão e terão cobertura adicionada nas próximas versões.
@@ -86,8 +84,9 @@ go test ./...
 
 ## Endpoints principais
 A documentação completa está disponível no Swagger:
-    -> /swagger/index.html
-
+```bash 
+/swagger/index.html
+```
 Exemplos básicos
 ```bash
 POST /api/books
