@@ -66,7 +66,7 @@ docker compose up -d
 
 ### 5. Rode as migarções
 ``` bash
-migrate -path migrates -database "mysql://user:pass@tcp(localhost:3306)/library" up
+migrate -path migrations -database "mysql://user:pass@tcp(localhost:3306)/library" up
 # migrate -path . -database "mysql://user:pass@tcp(localhost:3306)/library" up
 ```
 
