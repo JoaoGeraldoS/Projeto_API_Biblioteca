@@ -77,6 +77,8 @@ go run cmd/main.go
 Test coverage: atualmente apenas o módulo de livros possui testes.
 Os módulos restantes seguem o mesmo padrão e terão cobertura adicionada nas próximas versões.
 ``` bash
+go vet ./...
+golangci-lint run
 go test ./...
 ```
 ---
