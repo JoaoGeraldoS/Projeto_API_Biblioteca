@@ -3,6 +3,7 @@ package books
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -134,6 +135,10 @@ func (r *BookRepository) GetAll(ctx context.Context, filter *Filters) ([]Books, 
 	for _, book := range booksMap {
 		books = append(books, *book)
 	}
+
+	sort.Slice(books, func(i, j int) bool {
+		return books[i].ID < books[j].ID
+	})
 
 	return books, nil
 }

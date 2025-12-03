@@ -61,12 +61,13 @@ LOGGER_APP: "development" # production
 
 ### 4. Subir o banco de dados (MySQL via Docker)
 ``` bash
-docker compose up
+docker compose up -d
 ```
 
 ### 5. Rode as migarções
 ``` bash
-migrate -path . -database "mysql://user:pass@tcp(localhost:3306)/library" up
+migrate -path migrates -database "mysql://user:pass@tcp(localhost:3306)/library" up
+# migrate -path . -database "mysql://user:pass@tcp(localhost:3306)/library" up
 ```
 
 ### 6. Rode a aplicação
@@ -76,6 +77,12 @@ go run cmd/main.go
 ### 7. Testes
 Test coverage: atualmente apenas o módulo de livros possui testes.
 Os módulos restantes seguem o mesmo padrão e terão cobertura adicionada nas próximas versões.
+
+Remove pasta data
+```bash
+rm -rf data
+```
+
 ``` bash
 go vet ./...
 golangci-lint run
