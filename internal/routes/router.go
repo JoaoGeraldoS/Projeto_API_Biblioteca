@@ -26,15 +26,15 @@ func NewApp(db *sql.DB, logApp *zap.Logger) *App {
 
 	authRepo := authors.NewAuthorsRepository(db)
 	authSvc := authors.NewAuthorsService(authRepo)
-	authHandler := authors.NewAuthorsHandler(authSvc)
+	authHandler := authors.NewAuthorsHandler(authSvc, logApp)
 
 	catRepo := categories.NewCategoryRepository(db)
 	catSvc := categories.NewCategoryService(catRepo)
-	catHanlder := categories.NewCategoryHandler(catSvc)
+	catHanlder := categories.NewCategoryHandler(catSvc, logApp)
 
 	userRepo := users.NewUsersRepository(db)
 	userSvc := users.NewUsersService(userRepo)
-	userHandler := users.NewUsersHandler(userSvc)
+	userHandler := users.NewUsersHandler(userSvc, logApp)
 
 	return &App{
 		BookHandler:     bookHandler,

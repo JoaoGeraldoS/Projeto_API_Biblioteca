@@ -2,20 +2,21 @@ package users
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/middleware"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type UserHandler struct {
-	svc UserService
+	svc    UserService
+	logApp *zap.Logger
 }
 
-func NewUsersHandler(svc UserService) *UserHandler {
-	return &UserHandler{svc: svc}
+func NewUsersHandler(svc UserService, log *zap.Logger) *UserHandler {
+	return &UserHandler{svc: svc, logApp: log}
 }
 
 // @Summary Cria um novo usuario
@@ -30,11 +31,12 @@ func NewUsersHandler(svc UserService) *UserHandler {
 // @Security ApiKeyAuth
 // @Router /public/api/users [post]
 func (h *UserHandler) CreateUser(c *gin.Context) {
+	h.logApp.Info("Rota de criar usuário")
 
 	var dtoReq UserRequest
 
 	if err := c.ShouldBindJSON(&dtoReq); err != nil {
-		fmt.Println(err)
+		h.logApp.Error("falha ao ler json", zap.Error(err))
 		c.Error(middleware.BadRequest)
 		return
 	}
@@ -48,6 +50,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	}
 
 	if err := h.svc.Create(c.Request.Context(), newUser); err != nil {
+		h.logApp.Error("falha ao criar usuário", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		return
 	}
@@ -65,12 +68,14 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 // @Failure 500 {object} middleware.APIError "Erro interno"
 // @Router /public/api/users [get]
 func (h *UserHandler) ReadAllUsers(c *gin.Context) {
+	h.logApp.Info("Rota de obter usuários")
 
 	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*5)
 	defer cancel()
 
 	getUsers, err := h.svc.GetAll(ctx)
 	if err != nil {
+		h.logApp.Error("falha ao obter usuários", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		return
 	}
@@ -93,8 +98,11 @@ func (h *UserHandler) ReadAllUsers(c *gin.Context) {
 // @Failure 500 {object} middleware.APIError "Erro interno"
 // @Router /public/api/users/{id} [get]
 func (h *UserHandler) ReadUser(c *gin.Context) {
+	h.logApp.Info("Rota de obter usuário")
+
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verificar id", zap.Error(err))
 		c.Error(err)
 		return
 	}
@@ -104,7 +112,7 @@ func (h *UserHandler) ReadUser(c *gin.Context) {
 
 	result, err := h.svc.GetById(ctx, id)
 	if err != nil {
-		fmt.Println(err)
+		h.logApp.Error("falha ao obter usuário", zap.Error(err))
 		c.Error(middleware.NotFound)
 		return
 	}
@@ -125,8 +133,11 @@ func (h *UserHandler) ReadUser(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Router /api/users/{id} [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
+	h.logApp.Info("Rota de atualizar usuário")
+
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verificar id", zap.Error(err))
 		c.Error(err)
 		return
 	}
@@ -134,6 +145,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	var dtoReq UserRequest
 
 	if err := c.ShouldBindJSON(&dtoReq); err != nil {
+		h.logApp.Error("falha ao ler json", zap.Error(err))
 		c.Error(middleware.BadRequest)
 		return
 	}
@@ -145,11 +157,12 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	}
 
 	if err := h.svc.Update(c.Request.Context(), updateUser); err != nil {
+		h.logApp.Error("falha ao atualizar usuário", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		return
 	}
 
-	c.JSON(http.StatusNoContent, "")
+	c.Status(http.StatusNoContent)
 }
 
 // @Summary Exclui um usuario pelo ID
@@ -164,18 +177,22 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 // @Failure 404 {object} middleware.APIError "Livro não encontrado"
 // @Router /api/users/{id} [delete]
 func (h *UserHandler) DeleteUser(c *gin.Context) {
+	h.logApp.Info("Rota de apagar usuário")
+
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verificar id", zap.Error(err))
 		c.Error(err)
 		return
 	}
 
 	if err := h.svc.Delete(c.Request.Context(), id); err != nil {
+		h.logApp.Error("falha ao apagar usuário", zap.Error(err))
 		c.Error(middleware.NotFound)
 		return
 	}
 
-	c.JSON(http.StatusNoContent, "")
+	c.Status(http.StatusNoContent)
 }
 
 // @Summary Faz o login do usuario
@@ -189,25 +206,29 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 // @Failure 500 {object} middleware.APIError "Erro interno do servidor"
 // @Router /public/api/users/login [post]
 func (h *UserHandler) LoginUser(c *gin.Context) {
+	h.logApp.Info("Rota de login")
+
 	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*5)
 	defer cancel()
 
 	var dtoLogin LoginRequest
 
 	if err := c.ShouldBindJSON(&dtoLogin); err != nil {
+		h.logApp.Error("falha ao ler json", zap.Error(err))
 		c.Error(middleware.BadRequest)
 		return
 	}
 
 	user, err := h.svc.Login(ctx, dtoLogin.Email, dtoLogin.Password)
 	if err != nil {
-		fmt.Println(err)
+		h.logApp.Error("falha ao fazer login", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		return
 	}
 
 	tokenString, err := middleware.GenerateToken(user.Email, string(user.Role))
 	if err != nil {
+		h.logApp.Error("falha ao gerar token", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		return
 	}

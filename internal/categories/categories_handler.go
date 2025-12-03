@@ -5,14 +5,16 @@ import (
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/middleware"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type CategoryHandler struct {
-	svc CategoryService
+	svc    CategoryService
+	logApp *zap.Logger
 }
 
-func NewCategoryHandler(svc CategoryService) *CategoryHandler {
-	return &CategoryHandler{svc: svc}
+func NewCategoryHandler(svc CategoryService, log *zap.Logger) *CategoryHandler {
+	return &CategoryHandler{svc: svc, logApp: log}
 }
 
 // @Summary Cria um nova categoria
@@ -27,11 +29,14 @@ func NewCategoryHandler(svc CategoryService) *CategoryHandler {
 // @Security ApiKeyAuth
 // @Router /api/categories [post]
 func (h *CategoryHandler) CreateCategory(c *gin.Context) {
+	h.logApp.Info("Rota de criar categoria")
+
 	ctx := c.Request.Context()
 
 	var dto CategoryRequest
 
 	if err := c.ShouldBindJSON(&dto); err != nil {
+		h.logApp.Error("falha ao ler json", zap.Error(err))
 		c.Error(middleware.BadRequest)
 		c.Abort()
 		return
@@ -42,6 +47,7 @@ func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 	}
 
 	if err := h.svc.Create(ctx, category); err != nil {
+		h.logApp.Error("falha ao criar categoria", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		c.Abort()
 		return
@@ -59,8 +65,11 @@ func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 // @Failure 500 {object} middleware.APIError "Erro interno"
 // @Router /public/api/categories [get]
 func (h *CategoryHandler) ReadCategories(c *gin.Context) {
+	h.logApp.Info("Rota de obter categorias")
+
 	allCategories, err := h.svc.GetAll(c.Request.Context())
 	if err != nil {
+		h.logApp.Error("falha ao obter categorias", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		c.Abort()
 		return
@@ -84,14 +93,18 @@ func (h *CategoryHandler) ReadCategories(c *gin.Context) {
 // @Failure 500 {object} middleware.APIError "Erro interno"
 // @Router /public/api/categories/{id} [get]
 func (h *CategoryHandler) ReadCategory(c *gin.Context) {
+	h.logApp.Info("Rota de obter categoria")
+
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verificar id", zap.Error(err))
 		c.Error(err)
 		return
 	}
 
 	category, err := h.svc.GetById(c.Request.Context(), id)
 	if err != nil {
+		h.logApp.Error("falha ao obter categoria", zap.Error(err))
 		c.Error(middleware.NotFound)
 		c.Abort()
 		return
@@ -113,14 +126,18 @@ func (h *CategoryHandler) ReadCategory(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Router /api/categories/{id} [put]
 func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
+	h.logApp.Info("Rota de atualizar categoria")
+
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verificar id", zap.Error(err))
 		c.Error(err)
 		return
 	}
 
 	var dto CategoryRequest
 	if err := c.ShouldBindJSON(&dto); err != nil {
+		h.logApp.Error("falha ao ler json", zap.Error(err))
 		c.Error(middleware.BadRequest)
 		c.Abort()
 		return
@@ -133,11 +150,12 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 
 	err = h.svc.Update(c.Request.Context(), updateCategory)
 	if err != nil {
+		h.logApp.Error("falha ao atualizar categoria", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		return
 	}
 
-	c.JSON(http.StatusNoContent, "")
+	c.Status(http.StatusNoContent)
 }
 
 // @Summary Exclui uma categoria pelo ID
@@ -152,15 +170,20 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 // @Failure 404 {object} middleware.APIError "Livro não encontrado"
 // @Router /api/categories/{id} [delete]
 func (h *CategoryHandler) DeleteCategory(c *gin.Context) {
+	h.logApp.Info("Rota de apagar categoria")
+
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verificar id", zap.Error(err))
 		c.Error(err)
 		return
 	}
 
 	if err := h.svc.Delete(c.Request.Context(), id); err != nil {
+		h.logApp.Error("falha ao apagar categoria", zap.Error(err))
 		c.Error(middleware.NotFound)
+		return
 	}
 
-	c.JSON(http.StatusNoContent, "")
+	c.Status(http.StatusNoContent)
 }

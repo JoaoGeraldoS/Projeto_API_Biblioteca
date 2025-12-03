@@ -2,7 +2,6 @@ package books
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -33,11 +32,14 @@ func NewBookHandler(svc BookServcie, logApp *zap.Logger) *BookHandler {
 // @Security ApiKeyAuth
 // @Router /api/books [post]
 func (h *BookHandler) CreateBook(c *gin.Context) {
+	h.logApp.Info("Rota de criar livros")
+
 	ctx := c.Request.Context()
 
 	var bDtoReq BookRequest
 
 	if err := c.ShouldBindJSON(&bDtoReq); err != nil {
+		h.logApp.Error("falha ao ler json", zap.Error(err))
 		c.Error(middleware.BadRequest)
 		return
 	}
@@ -50,7 +52,7 @@ func (h *BookHandler) CreateBook(c *gin.Context) {
 	}
 
 	if err := h.service.Create(ctx, newBook); err != nil {
-		fmt.Println(err)
+		h.logApp.Error("falha ao criar livro", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		return
 	}
@@ -72,6 +74,8 @@ func (h *BookHandler) CreateBook(c *gin.Context) {
 // @Failure 500 {object} middleware.APIError "Erro interno"
 // @Router /public/api/books [get]
 func (h *BookHandler) ReadAllBooks(c *gin.Context) {
+	h.logApp.Info("Rota de ver todos os livros")
+
 	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*3)
 	defer cancel()
 
@@ -82,7 +86,7 @@ func (h *BookHandler) ReadAllBooks(c *gin.Context) {
 
 	page, err := strconv.Atoi(pagePar)
 	if err != nil {
-		c.Error(err)
+		h.logApp.Error("falha ao aonverter page", zap.Error(err))
 		return
 	}
 
@@ -95,6 +99,7 @@ func (h *BookHandler) ReadAllBooks(c *gin.Context) {
 
 	books, err := h.service.GetAll(ctx, filter)
 	if err != nil {
+		h.logApp.Error("falha ao obter livros", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		c.Abort()
 		return
@@ -104,8 +109,6 @@ func (h *BookHandler) ReadAllBooks(c *gin.Context) {
 	for _, book := range books {
 		response = append(response, ToResponse(&book))
 	}
-
-	h.logApp.Debug("Rota de ver todos os livros")
 
 	c.JSON(http.StatusOK, response)
 }
@@ -122,18 +125,21 @@ func (h *BookHandler) ReadAllBooks(c *gin.Context) {
 // @Failure 500 {object}	middleware.APIError "Erro interno"
 // @Router /public/api/books/{id} [get]
 func (h *BookHandler) ReadBook(c *gin.Context) {
+	h.logApp.Info("Rota de um livro")
+
 	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Second*3)
 	defer cancel()
 
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verifica id", zap.Error(err))
 		c.Error(err)
 		return
 	}
 
 	book, err := h.service.GetById(ctx, id)
 	if err != nil {
-		fmt.Println(err)
+		h.logApp.Error("falha ao obter livro", zap.Error(err))
 		c.Error(middleware.NotFound)
 		return
 	}
@@ -154,8 +160,11 @@ func (h *BookHandler) ReadBook(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Router /api/books/{id} [put]
 func (h *BookHandler) UpdateBook(c *gin.Context) {
+	h.logApp.Info("Rota de atualizar um livro")
+
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verifica id", zap.Error(err))
 		c.Error(err)
 		return
 	}
@@ -163,6 +172,7 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 	var dtoReq BookRequest
 
 	if err := c.ShouldBindJSON(&dtoReq); err != nil {
+		h.logApp.Error("falha ao ler json", zap.Error(err))
 		c.Error(middleware.BadRequest)
 		return
 	}
@@ -176,6 +186,7 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 	}
 
 	if err := h.service.Update(c.Request.Context(), updateBook); err != nil {
+		h.logApp.Error("falha ao atualizar livro", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		return
 	}
@@ -196,18 +207,22 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 // @Failure 404 {object} middleware.APIError "Livro não encontrado"
 // @Router /api/books/{id} [delete]
 func (h *BookHandler) DeleteBook(c *gin.Context) {
+	h.logApp.Info("Rota de apagar livro")
+
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verifica id", zap.Error(err))
 		c.Error(err)
 		return
 	}
 
 	if err := h.service.Delete(c.Request.Context(), id); err != nil {
+		h.logApp.Error("falha ao apagar livro", zap.Error(err))
 		c.Error(middleware.NotFound)
 		return
 	}
 
-	c.JSON(http.StatusNoContent, "")
+	c.Status(http.StatusNoContent)
 }
 
 // @Summary Associa um livro a uma categoria
@@ -222,18 +237,21 @@ func (h *BookHandler) DeleteBook(c *gin.Context) {
 // @Failure 500 {object} middleware.APIError "Erro interno do servidor (Erro na criação da relação)"
 // @Router /api/books/relation [post]
 func (h *BookHandler) RelationBookCategory(c *gin.Context) {
+	h.logApp.Info("Rota de relacionamento")
 	ctx := c.Request.Context()
 	var bcDtoReq BookCategoryRequest
 
 	if err := c.ShouldBindJSON(&bcDtoReq); err != nil {
+		h.logApp.Error("falha ao ler json", zap.Error(err))
 		c.Error(middleware.BadRequest)
 		return
 	}
 
 	if err := h.service.RelationBookCategory(ctx, bcDtoReq.BookID, bcDtoReq.CategoryID); err != nil {
+		h.logApp.Error("falha ao fazer relacionamento", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		return
 	}
 
-	c.JSON(http.StatusOK, "")
+	c.Status(http.StatusOK)
 }

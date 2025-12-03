@@ -5,14 +5,16 @@ import (
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/middleware"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type AuthorHandler struct {
-	svc AuthorsService
+	svc    AuthorsService
+	logApp *zap.Logger
 }
 
-func NewAuthorsHandler(svc AuthorsService) *AuthorHandler {
-	return &AuthorHandler{svc: svc}
+func NewAuthorsHandler(svc AuthorsService, log *zap.Logger) *AuthorHandler {
+	return &AuthorHandler{svc: svc, logApp: log}
 }
 
 // @Summary Cria um novo autor
@@ -27,11 +29,14 @@ func NewAuthorsHandler(svc AuthorsService) *AuthorHandler {
 // @Security ApiKeyAuth
 // @Router /api/authors [post]
 func (h *AuthorHandler) CreateAuthor(c *gin.Context) {
+	h.logApp.Info("Rode de criar autor")
+
 	ctx := c.Request.Context()
 
 	var dto AuthorRequest
 
 	if err := c.ShouldBindJSON(&dto); err != nil {
+		h.logApp.Error("falha ao ler json", zap.Error(err))
 		c.Error(middleware.BadRequest)
 		c.Abort()
 		return
@@ -43,6 +48,7 @@ func (h *AuthorHandler) CreateAuthor(c *gin.Context) {
 	}
 
 	if err := h.svc.Create(ctx, author); err != nil {
+		h.logApp.Error("falha ao criar autor", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		c.Abort()
 		return
@@ -60,8 +66,11 @@ func (h *AuthorHandler) CreateAuthor(c *gin.Context) {
 // @Failure 500 {object} middleware.APIError "Erro interno"
 // @Router /public/api/authors [get]
 func (h *AuthorHandler) ReadAuthors(c *gin.Context) {
+	h.logApp.Info("Rode de obter autores")
+
 	authors, err := h.svc.GetAll(c.Request.Context())
 	if err != nil {
+		h.logApp.Error("falha ao obter autores", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		return
 	}
@@ -84,14 +93,18 @@ func (h *AuthorHandler) ReadAuthors(c *gin.Context) {
 // @Failure 500 {object} middleware.APIError "Erro interno"
 // @Router /public/api/authors/{id} [get]
 func (h *AuthorHandler) ReadAuthor(c *gin.Context) {
+	h.logApp.Info("Roda de obter autor")
+
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verificar id", zap.Error(err))
 		c.Error(err)
 		return
 	}
 
 	author, err := h.svc.GetByID(c.Request.Context(), id)
 	if err != nil {
+		h.logApp.Error("falha ao obter autor", zap.Error(err))
 		c.Error(middleware.NotFound)
 		return
 	}
@@ -112,14 +125,18 @@ func (h *AuthorHandler) ReadAuthor(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Router /api/authors/{id} [put]
 func (h *AuthorHandler) UpdateAuthor(c *gin.Context) {
+	h.logApp.Info("Rota de atualizar autor")
+
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verificar id", zap.Error(err))
 		c.Error(err)
 		return
 	}
 
 	var dto AuthorRequest
 	if err := c.ShouldBindJSON(&dto); err != nil {
+		h.logApp.Error("falha ao ler json", zap.Error(err))
 		c.Error(middleware.BadRequest)
 		return
 	}
@@ -132,11 +149,12 @@ func (h *AuthorHandler) UpdateAuthor(c *gin.Context) {
 
 	err = h.svc.Update(c.Request.Context(), updateAuthor)
 	if err != nil {
+		h.logApp.Error("erro ao atualizar autor", zap.Error(err))
 		c.Error(middleware.InternalErr)
 		return
 	}
 
-	c.JSON(http.StatusNoContent, "")
+	c.Status(http.StatusNoContent)
 }
 
 // @Summary Exclui um autor pelo ID
@@ -151,17 +169,20 @@ func (h *AuthorHandler) UpdateAuthor(c *gin.Context) {
 // @Failure 404 {object} middleware.APIError "Livro não encontrado"
 // @Router /api/authors/{id} [delete]
 func (h *AuthorHandler) DeleteAuthor(c *gin.Context) {
+	h.logApp.Info("Rota de apagar autor")
+
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
+		h.logApp.Error("falha ao verificar id", zap.Error(err))
 		c.Error(err)
 		return
 	}
 
 	if err := h.svc.Delete(c.Request.Context(), id); err != nil {
+		h.logApp.Error("falha ao apagar autor", zap.Error(err))
 		c.Error(middleware.NotFound)
 		return
 	}
 
-	c.JSON(http.StatusNoContent, "")
-
+	c.Status(http.StatusNoContent)
 }
