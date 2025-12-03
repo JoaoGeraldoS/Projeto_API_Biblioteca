@@ -42,7 +42,9 @@ func (r *CategoryRepository) GetAll(ctx context.Context) ([]Category, error) {
 	for rows.Next() {
 		var c Category
 
-		rows.Scan(&c.ID, &c.Name, &c.CreatedAT)
+		if err := rows.Scan(&c.ID, &c.Name, &c.CreatedAT); err != nil {
+			return nil, err
+		}
 		categories = append(categories, c)
 	}
 

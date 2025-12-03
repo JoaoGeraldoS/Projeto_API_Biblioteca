@@ -51,7 +51,9 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]Users, error) {
 
 		var u Users
 
-		rows.Scan(&u.ID, &u.Name, &u.Email, &createdAt, &updatedAt)
+		if err := rows.Scan(&u.ID, &u.Name, &u.Email, &createdAt, &updatedAt); err != nil {
+			return nil, err
+		}
 
 		getUsers = append(getUsers, u)
 	}

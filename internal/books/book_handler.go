@@ -40,7 +40,7 @@ func (h *BookHandler) CreateBook(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&bDtoReq); err != nil {
 		h.logApp.Error("falha ao ler json", zap.Error(err))
-		c.Error(middleware.BadRequest)
+		_ = c.Error(middleware.BadRequest)
 		return
 	}
 
@@ -53,7 +53,7 @@ func (h *BookHandler) CreateBook(c *gin.Context) {
 
 	if err := h.service.Create(ctx, newBook); err != nil {
 		h.logApp.Error("falha ao criar livro", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 
@@ -87,6 +87,7 @@ func (h *BookHandler) ReadAllBooks(c *gin.Context) {
 	page, err := strconv.Atoi(pagePar)
 	if err != nil {
 		h.logApp.Error("falha ao aonverter page", zap.Error(err))
+		_ = c.Error(err)
 		return
 	}
 
@@ -100,8 +101,7 @@ func (h *BookHandler) ReadAllBooks(c *gin.Context) {
 	books, err := h.service.GetAll(ctx, filter)
 	if err != nil {
 		h.logApp.Error("falha ao obter livros", zap.Error(err))
-		c.Error(middleware.InternalErr)
-		c.Abort()
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 
@@ -133,14 +133,14 @@ func (h *BookHandler) ReadBook(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verifica id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	book, err := h.service.GetById(ctx, id)
 	if err != nil {
 		h.logApp.Error("falha ao obter livro", zap.Error(err))
-		c.Error(middleware.NotFound)
+		_ = c.Error(middleware.NotFound)
 		return
 	}
 
@@ -165,7 +165,7 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verifica id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
@@ -173,7 +173,7 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&dtoReq); err != nil {
 		h.logApp.Error("falha ao ler json", zap.Error(err))
-		c.Error(middleware.BadRequest)
+		_ = c.Error(middleware.BadRequest)
 		return
 	}
 
@@ -187,7 +187,7 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 
 	if err := h.service.Update(c.Request.Context(), updateBook); err != nil {
 		h.logApp.Error("falha ao atualizar livro", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 
@@ -211,13 +211,13 @@ func (h *BookHandler) DeleteBook(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verifica id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	if err := h.service.Delete(c.Request.Context(), id); err != nil {
 		h.logApp.Error("falha ao apagar livro", zap.Error(err))
-		c.Error(middleware.NotFound)
+		_ = c.Error(middleware.NotFound)
 		return
 	}
 
@@ -242,13 +242,13 @@ func (h *BookHandler) RelationBookCategory(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&bcDtoReq); err != nil {
 		h.logApp.Error("falha ao ler json", zap.Error(err))
-		c.Error(middleware.BadRequest)
+		_ = c.Error(middleware.BadRequest)
 		return
 	}
 
 	if err := h.service.RelationBookCategory(ctx, bcDtoReq.BookID, bcDtoReq.CategoryID); err != nil {
 		h.logApp.Error("falha ao fazer relacionamento", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 

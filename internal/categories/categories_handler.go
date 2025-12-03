@@ -37,7 +37,7 @@ func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&dto); err != nil {
 		h.logApp.Error("falha ao ler json", zap.Error(err))
-		c.Error(middleware.BadRequest)
+		_ = c.Error(middleware.BadRequest)
 		c.Abort()
 		return
 	}
@@ -48,7 +48,7 @@ func (h *CategoryHandler) CreateCategory(c *gin.Context) {
 
 	if err := h.svc.Create(ctx, category); err != nil {
 		h.logApp.Error("falha ao criar categoria", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		c.Abort()
 		return
 	}
@@ -70,7 +70,7 @@ func (h *CategoryHandler) ReadCategories(c *gin.Context) {
 	allCategories, err := h.svc.GetAll(c.Request.Context())
 	if err != nil {
 		h.logApp.Error("falha ao obter categorias", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		c.Abort()
 		return
 	}
@@ -98,14 +98,14 @@ func (h *CategoryHandler) ReadCategory(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verificar id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	category, err := h.svc.GetById(c.Request.Context(), id)
 	if err != nil {
 		h.logApp.Error("falha ao obter categoria", zap.Error(err))
-		c.Error(middleware.NotFound)
+		_ = c.Error(middleware.NotFound)
 		c.Abort()
 		return
 	}
@@ -131,14 +131,14 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verificar id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	var dto CategoryRequest
 	if err := c.ShouldBindJSON(&dto); err != nil {
 		h.logApp.Error("falha ao ler json", zap.Error(err))
-		c.Error(middleware.BadRequest)
+		_ = c.Error(middleware.BadRequest)
 		c.Abort()
 		return
 	}
@@ -151,7 +151,7 @@ func (h *CategoryHandler) UpdateCategory(c *gin.Context) {
 	err = h.svc.Update(c.Request.Context(), updateCategory)
 	if err != nil {
 		h.logApp.Error("falha ao atualizar categoria", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 
@@ -175,13 +175,13 @@ func (h *CategoryHandler) DeleteCategory(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verificar id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	if err := h.svc.Delete(c.Request.Context(), id); err != nil {
 		h.logApp.Error("falha ao apagar categoria", zap.Error(err))
-		c.Error(middleware.NotFound)
+		_ = c.Error(middleware.NotFound)
 		return
 	}
 

@@ -37,7 +37,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&dtoReq); err != nil {
 		h.logApp.Error("falha ao ler json", zap.Error(err))
-		c.Error(middleware.BadRequest)
+		_ = c.Error(middleware.BadRequest)
 		return
 	}
 
@@ -51,7 +51,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 	if err := h.svc.Create(c.Request.Context(), newUser); err != nil {
 		h.logApp.Error("falha ao criar usuário", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 
@@ -76,7 +76,7 @@ func (h *UserHandler) ReadAllUsers(c *gin.Context) {
 	getUsers, err := h.svc.GetAll(ctx)
 	if err != nil {
 		h.logApp.Error("falha ao obter usuários", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 
@@ -103,7 +103,7 @@ func (h *UserHandler) ReadUser(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verificar id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
@@ -113,7 +113,7 @@ func (h *UserHandler) ReadUser(c *gin.Context) {
 	result, err := h.svc.GetById(ctx, id)
 	if err != nil {
 		h.logApp.Error("falha ao obter usuário", zap.Error(err))
-		c.Error(middleware.NotFound)
+		_ = c.Error(middleware.NotFound)
 		return
 	}
 
@@ -138,7 +138,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verificar id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
@@ -146,7 +146,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&dtoReq); err != nil {
 		h.logApp.Error("falha ao ler json", zap.Error(err))
-		c.Error(middleware.BadRequest)
+		_ = c.Error(middleware.BadRequest)
 		return
 	}
 
@@ -158,7 +158,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
 	if err := h.svc.Update(c.Request.Context(), updateUser); err != nil {
 		h.logApp.Error("falha ao atualizar usuário", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 
@@ -182,13 +182,13 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verificar id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	if err := h.svc.Delete(c.Request.Context(), id); err != nil {
 		h.logApp.Error("falha ao apagar usuário", zap.Error(err))
-		c.Error(middleware.NotFound)
+		_ = c.Error(middleware.NotFound)
 		return
 	}
 
@@ -215,21 +215,21 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&dtoLogin); err != nil {
 		h.logApp.Error("falha ao ler json", zap.Error(err))
-		c.Error(middleware.BadRequest)
+		_ = c.Error(middleware.BadRequest)
 		return
 	}
 
 	user, err := h.svc.Login(ctx, dtoLogin.Email, dtoLogin.Password)
 	if err != nil {
 		h.logApp.Error("falha ao fazer login", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 
 	tokenString, err := middleware.GenerateToken(user.Email, string(user.Role))
 	if err != nil {
 		h.logApp.Error("falha ao gerar token", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 

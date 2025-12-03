@@ -37,7 +37,7 @@ func (h *AuthorHandler) CreateAuthor(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&dto); err != nil {
 		h.logApp.Error("falha ao ler json", zap.Error(err))
-		c.Error(middleware.BadRequest)
+		_ = c.Error(middleware.BadRequest)
 		c.Abort()
 		return
 	}
@@ -49,7 +49,7 @@ func (h *AuthorHandler) CreateAuthor(c *gin.Context) {
 
 	if err := h.svc.Create(ctx, author); err != nil {
 		h.logApp.Error("falha ao criar autor", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		c.Abort()
 		return
 	}
@@ -71,7 +71,7 @@ func (h *AuthorHandler) ReadAuthors(c *gin.Context) {
 	authors, err := h.svc.GetAll(c.Request.Context())
 	if err != nil {
 		h.logApp.Error("falha ao obter autores", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 
@@ -98,14 +98,14 @@ func (h *AuthorHandler) ReadAuthor(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verificar id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	author, err := h.svc.GetByID(c.Request.Context(), id)
 	if err != nil {
 		h.logApp.Error("falha ao obter autor", zap.Error(err))
-		c.Error(middleware.NotFound)
+		_ = c.Error(middleware.NotFound)
 		return
 	}
 
@@ -130,14 +130,14 @@ func (h *AuthorHandler) UpdateAuthor(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verificar id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	var dto AuthorRequest
 	if err := c.ShouldBindJSON(&dto); err != nil {
 		h.logApp.Error("falha ao ler json", zap.Error(err))
-		c.Error(middleware.BadRequest)
+		_ = c.Error(middleware.BadRequest)
 		return
 	}
 
@@ -150,7 +150,7 @@ func (h *AuthorHandler) UpdateAuthor(c *gin.Context) {
 	err = h.svc.Update(c.Request.Context(), updateAuthor)
 	if err != nil {
 		h.logApp.Error("erro ao atualizar autor", zap.Error(err))
-		c.Error(middleware.InternalErr)
+		_ = c.Error(middleware.InternalErr)
 		return
 	}
 
@@ -174,13 +174,13 @@ func (h *AuthorHandler) DeleteAuthor(c *gin.Context) {
 	id, err := middleware.GetIdParam(c)
 	if err != nil {
 		h.logApp.Error("falha ao verificar id", zap.Error(err))
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	if err := h.svc.Delete(c.Request.Context(), id); err != nil {
 		h.logApp.Error("falha ao apagar autor", zap.Error(err))
-		c.Error(middleware.NotFound)
+		_ = c.Error(middleware.NotFound)
 		return
 	}
 

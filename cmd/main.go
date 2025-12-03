@@ -34,7 +34,9 @@ func main() {
 	loggerEnv := os.Getenv("LOGGER_APP")
 
 	loggerApp := logger.NewLogger(loggerEnv)
-	defer loggerApp.Sync()
+	defer func() {
+		_ = loggerApp.Sync()
+	}()
 
 	if loggerEnv != "development" {
 		loggerApp.Info("Log em modo de PRODUÇÃO")
@@ -48,5 +50,7 @@ func main() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	log.Println("Server on :8080")
-	r.Run(":8080")
+	if err := r.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }

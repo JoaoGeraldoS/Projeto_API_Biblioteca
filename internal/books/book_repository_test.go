@@ -76,8 +76,10 @@ func TestBookRepository_Create(t *testing.T) {
 			}
 
 			var found books.Books
-			db.QueryRowContext(ctx, "SELECT id, title FROM books WHERE id = ?", tt.input.ID).
-				Scan(&found.ID, &found.Title)
+			if err := db.QueryRowContext(ctx, "SELECT id, title FROM books WHERE id = ?", tt.input.ID).
+				Scan(&found.ID, &found.Title); err != nil {
+				t.Fatalf("erro ao escanear: %v", err)
+			}
 
 			if found.Title != tt.input.Title {
 				t.Errorf("esperava name=%s, recebeu=%s", tt.input.Title, found.Title)
@@ -167,8 +169,10 @@ func TestBookRepository_Update(t *testing.T) {
 			}
 
 			var found books.Books
-			db.QueryRowContext(ctx, "SELECT id, title FROM books WHERE id = ?", tt.update.ID).
-				Scan(&found.ID, &found.Title)
+			if err := db.QueryRowContext(ctx, "SELECT id, title FROM books WHERE id = ?", tt.update.ID).
+				Scan(&found.ID, &found.Title); err != nil {
+				t.Fatalf("erro ao escanear: %v", err)
+			}
 
 			if found.Title != tt.update.Title {
 				t.Errorf("esperava title=%s, recebeu=%s", tt.update.Title, found.Title)
