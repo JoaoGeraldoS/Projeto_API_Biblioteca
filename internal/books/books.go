@@ -3,6 +3,7 @@ package books
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/authors"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/categories"
@@ -13,8 +14,8 @@ type Books struct {
 	Title       string
 	Description string
 	Content     string
-	CreatedAt   string
-	UpdatedAt   string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 	Categories  []categories.Category
 	AuthorID    int64
 	Authors     authors.Authors

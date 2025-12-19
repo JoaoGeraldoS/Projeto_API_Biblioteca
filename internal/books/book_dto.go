@@ -1,6 +1,8 @@
 package books
 
 import (
+	"time"
+
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/authors"
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/categories"
@@ -21,17 +23,43 @@ type BookCategoryRequest struct {
 }
 
 type BookResponse struct {
-	ID          int64                 `json:"id"`
-	Title       string                `json:"title"`
-	Description string                `json:"description"`
-	Content     string                `json:"content"`
-	CreatedAt   string                `json:"created_at"`
-	UpdatedAt   string                `json:"updated_at"`
-	Categories  []categories.Category `json:"categories"`
-	AuthorID    int64                 `json:"author_id"`
-	Authors     authors.Authors       `json:"author"`
+	ID          int64                         `json:"id"`
+	Title       string                        `json:"title"`
+	Description string                        `json:"description"`
+	Content     string                        `json:"content"`
+	CreatedAt   string                        `json:"created_at"`
+	UpdatedAt   string                        `json:"updated_at"`
+	Categories  []categories.CategoryResponse `json:"categories"`
+	AuthorID    int64                         `json:"author_id"`
+	Authors     authors.AuthorResponse        `json:"author"`
 }
 
-func ToResponse(book *Books) BookResponse {
-	return BookResponse(*book)
+func toCategoryResponse(cats []categories.Category) []categories.CategoryResponse {
+	resp := make([]categories.CategoryResponse, 0, len(cats))
+	for _, c := range cats {
+		resp = append(resp, categories.ToResponse(&c))
+	}
+	return resp
+}
+
+func formatTime(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.Format("02/01/06 15:04:05")
+}
+
+func ToResponse(b *Books) BookResponse {
+
+	return BookResponse{
+		ID:          b.ID,
+		Title:       b.Title,
+		Description: b.Description,
+		Content:     b.Content,
+		AuthorID:    b.AuthorID,
+		CreatedAt:   formatTime(b.CreatedAt),
+		UpdatedAt:   formatTime(b.UpdatedAt),
+		Authors:     authors.ToResponse(&b.Authors),
+		Categories:  toCategoryResponse(b.Categories),
+	}
 }

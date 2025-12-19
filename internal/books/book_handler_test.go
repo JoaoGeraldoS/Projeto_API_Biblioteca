@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -21,7 +22,16 @@ func TestBookHandler_CreateBook(t *testing.T) {
 			name:    "sucesse return 201 Created",
 			reqBody: validBookRequest,
 			setupMock: func(b *MockBookRepo) {
-				b.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
+				b.On("Create", mock.Anything, mock.Anything).
+					Run(func(args mock.Arguments) {
+						book := args.Get(1).(*Books)
+
+						book.AuthorID = 1
+						book.CreatedAt = time.Time{}
+						book.UpdatedAt = time.Time{}
+					}).
+					Return(nil).
+					Once()
 			},
 			status: http.StatusCreated,
 			body:   expectedBody,
@@ -33,7 +43,7 @@ func TestBookHandler_CreateBook(t *testing.T) {
 				b.On("Create", mock.Anything, mock.Anything).Return(errors.New("db timeout")).Once()
 			},
 			status: http.StatusInternalServerError,
-			body:   `{"code":"INTERNAL_ERROR","message":"Erro interno ocorrido","path":"/api/books","status":500}`,
+			body:   `{"code":"INTERNAL_ERROR","message":"Internal error occurred.","path":"/api/books","status":500}`,
 		},
 		{
 			name:    "InvalidJson Return 400 BadRequest",
@@ -42,7 +52,7 @@ func TestBookHandler_CreateBook(t *testing.T) {
 				b.AssertNotCalled(t, "Create", mock.Anything, mock.Anything)
 			},
 			status: http.StatusBadRequest,
-			body:   `{"code":"BAD_REQUEST","message":"Solicitação invalida","path":"/api/books","status":400}`,
+			body:   `{"code":"BAD_REQUEST","message":"Invalid request","path":"/api/books","status":400}`,
 		},
 	}
 	for _, tt := range tests {
@@ -95,7 +105,7 @@ func TestBookHandler_UpdateBook(t *testing.T) {
 				b.On("Update", mock.Anything, mock.Anything).Return(errors.New("db timeout")).Once()
 			},
 			status: http.StatusInternalServerError,
-			body:   `{"code":"INTERNAL_ERROR","message":"Erro interno ocorrido","path":"/api/books/1","status":500}`,
+			body:   `{"code":"INTERNAL_ERROR","message":"Internal error occurred.","path":"/api/books/1","status":500}`,
 		},
 		{
 			name:    "InvalidJson Return 400 BadRequest",
@@ -105,7 +115,7 @@ func TestBookHandler_UpdateBook(t *testing.T) {
 				b.AssertNotCalled(t, "Update", mock.Anything, mock.Anything)
 			},
 			status: http.StatusBadRequest,
-			body:   `{"code":"BAD_REQUEST","message":"Solicitação invalida","path":"/api/books/1","status":400}`,
+			body:   `{"code":"BAD_REQUEST","message":"Invalid request","path":"/api/books/1","status":400}`,
 		},
 	}
 
@@ -160,7 +170,7 @@ func TestBookHandler_DeleteBook(t *testing.T) {
 				b.On("Delete", mock.Anything, int64(99)).Return(errors.New("db timeout")).Once()
 			},
 			status: http.StatusNotFound,
-			body:   `{"code":"NOT_FOUND","message":"Recurno não encontrado","path":"/api/books/99","status":404}`,
+			body:   `{"code":"NOT_FOUND","message":"Resource not found.","path":"/api/books/99","status":404}`,
 		},
 	}
 	for _, tt := range tests {

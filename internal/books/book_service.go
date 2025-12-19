@@ -35,6 +35,10 @@ func (s *serviceBook) GetById(ctx context.Context, id int64) (*Books, error) {
 }
 
 func (s *serviceBook) Update(ctx context.Context, b *Books) error {
+	if err := b.Validate(); err != nil {
+		return err
+	}
+
 	return s.book.Update(ctx, b)
 }
 

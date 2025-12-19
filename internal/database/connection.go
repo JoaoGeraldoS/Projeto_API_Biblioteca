@@ -8,7 +8,7 @@ import (
 
 	// Importa o driver MySQL para registrar no database/sql
 	_ "github.com/go-sql-driver/mysql"
-	// Importa o driver SQLITE# para registrar no database/sql
+	// Importa o driver SQLITE3 para registrar no database/sql
 	_ "github.com/mattn/go-sqlite3"
 )
 

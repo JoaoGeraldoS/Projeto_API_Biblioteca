@@ -64,7 +64,7 @@ func ErrorHandler() gin.HandlerFunc {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 					"status":  http.StatusInternalServerError,
 					"code":    "INTERNAL_SERVER_ERROR",
-					"message": "Ocorreu um erro inesperado",
+					"message": "Internal error occurred.",
 					"path":    reqPath,
 				})
 			}
@@ -74,7 +74,7 @@ func ErrorHandler() gin.HandlerFunc {
 }
 
 var (
-	NotFound    = NewApiError(http.StatusNotFound, "NOT_FOUND", "Recurno não encontrado", nil)
-	BadRequest  = NewApiError(http.StatusBadRequest, "BAD_REQUEST", "Solicitação invalida", nil)
-	InternalErr = NewApiError(http.StatusInternalServerError, "INTERNAL_ERROR", "Erro interno ocorrido", nil)
+	NotFound    = NewApiError(http.StatusNotFound, "NOT_FOUND", "Resource not found.", nil)
+	BadRequest  = NewApiError(http.StatusBadRequest, "BAD_REQUEST", "Invalid request", nil)
+	InternalErr = NewApiError(http.StatusInternalServerError, "INTERNAL_ERROR", "Internal error occurred.", nil)
 )

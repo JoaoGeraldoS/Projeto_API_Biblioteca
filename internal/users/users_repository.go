@@ -34,7 +34,7 @@ func (r *UserRepository) Create(ctx context.Context, user *Users) error {
 }
 
 func (r *UserRepository) GetAll(ctx context.Context) ([]Users, error) {
-	query := `SELECT id, name, email FROM users`
+	query := `SELECT id, name, email, created_at, updated_at FROM users`
 
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {

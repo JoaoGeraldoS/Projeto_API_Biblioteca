@@ -41,7 +41,7 @@ func TestBookHandler_ReadAllBooks(t *testing.T) {
 			queryParams:    "?page=abc",
 			mockReturn:     nil,
 			mockErr:        nil,
-			expectedStatus: http.StatusInternalServerError,
+			expectedStatus: http.StatusBadRequest,
 		},
 	}
 

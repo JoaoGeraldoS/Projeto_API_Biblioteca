@@ -12,5 +12,9 @@ type CategoryResponse struct {
 }
 
 func ToResponse(cat *Category) CategoryResponse {
-	return CategoryResponse(*cat)
+	return CategoryResponse{
+		ID:        cat.ID,
+		Name:      cat.Name,
+		CreatedAT: cat.CreatedAT.Format("02/01/06 15:04:05"),
+	}
 }

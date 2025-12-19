@@ -53,11 +53,11 @@ var expectedBody = `{
   "content": "A menina e o porquinho",
   "created_at": "",
   "updated_at": "",
-  "categories": null,
+  "categories": [],
   "author": {
-    "ID": 0,
-    "Name": "",
-    "Description": ""
+    "id": 0,
+    "name": "",
+    "description": ""
   }
 }
 `

@@ -84,11 +84,15 @@ func (h *BookHandler) ReadAllBooks(c *gin.Context) {
 	author := c.Query("author")
 	category := c.Query("category")
 
-	page, err := strconv.Atoi(pagePar)
-	if err != nil {
-		h.logApp.Error("falha ao aonverter page", zap.Error(err))
-		_ = c.Error(err)
-		return
+	page := 0
+	if pagePar != "" {
+		var err error
+		page, err = strconv.Atoi(pagePar)
+		if err != nil {
+			h.logApp.Error("falha ao converter page", zap.Error(err))
+			_ = c.Error(middleware.BadRequest)
+			return
+		}
 	}
 
 	filter := &Filters{

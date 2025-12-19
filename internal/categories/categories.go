@@ -3,12 +3,13 @@ package categories
 import (
 	"context"
 	"errors"
+	"time"
 )
 
 type Category struct {
 	ID        int64
 	Name      string
-	CreatedAT string
+	CreatedAT time.Time
 }
 
 type CategoryCreator interface {
