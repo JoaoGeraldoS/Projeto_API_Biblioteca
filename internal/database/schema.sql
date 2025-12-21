@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS authors (
     id INTEGER NOT NULL PRIMARY KEY,
     name VARCHAR(100) NOT NULL CHECK(name <> ''),
-    description TEXT NOT NULL
+    description TEXT NOT NULL 
 );
 		
 CREATE TABLE IF NOT EXISTS categories (
