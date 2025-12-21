@@ -51,6 +51,10 @@ func Routers(db *sql.DB, logApp *zap.Logger) *gin.Engine {
 
 	r.Use(middleware.ErrorHandler())
 
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "OK"})
+	})
+
 	public := r.Group("/public")
 
 	protected := r.Group("/")

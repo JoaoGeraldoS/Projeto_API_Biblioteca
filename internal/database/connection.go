@@ -23,7 +23,7 @@ func Connection() *sql.DB {
 
 	if err := db.Ping(); err != nil {
 		db.Close()
-		log.Fatal("Erro ao verificar conexão")
+		log.Fatalf("Erro ao verificar conexão (Ping): %v", err)
 	}
 
 	return db
