@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/docs"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/database"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/logger"
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/routes"
@@ -29,6 +30,13 @@ func init() {
 
 // @host localhost:8080
 func main() {
+	host := os.Getenv("RENDER_EXTERNAL_HOSTNAME")
+	if host == "" {
+		docs.SwaggerInfo.Host = "localhost:8080"
+	} else {
+		docs.SwaggerInfo.Host = host
+	}
+
 	loggerEnv := os.Getenv("LOGGER_APP")
 
 	loggerApp := logger.NewLogger(loggerEnv)

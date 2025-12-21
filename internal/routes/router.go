@@ -50,6 +50,7 @@ func Routers(db *sql.DB, logApp *zap.Logger) *gin.Engine {
 	app := NewApp(db, logApp)
 
 	r.Use(middleware.ErrorHandler())
+	r.Use(middleware.Cors())
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "OK"})
