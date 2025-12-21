@@ -16,10 +16,7 @@ import (
 )
 
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Erro ao carregar o env")
-	}
+	_ = godotenv.Load()
 }
 
 // @title API da Biblioteca
