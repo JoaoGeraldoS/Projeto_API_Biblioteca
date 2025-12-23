@@ -5,9 +5,14 @@ type UserRequest struct {
 	Name     string `json:"name" binding:"required" example:"Joaquim Silva"`
 	Email    string `json:"email" binding:"required" example:"joaquim@email.com"`
 	Password string `json:"password" binding:"required" example:"password123"`
-	Bio      string `json:"bio" example:"Meu nome é Joaquim"`
 	Username string `json:"username" binding:"required" example:"joaoquim324"`
 	Role     Roles  `json:"role"`
+}
+
+// @Description Dados necessários para atualizar usuario
+type UserUpdateRequest struct {
+	Name string `json:"name" binding:"required" example:"Joaquim Silva"`
+	Bio  string `json:"bio" example:"Meu nome é Joaquim"`
 }
 
 // @Description Dados necessários para fazer o login

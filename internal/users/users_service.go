@@ -2,6 +2,8 @@ package users
 
 import (
 	"context"
+	"errors"
+	"strings"
 
 	"github.com/JoaoGeraldoS/Projeto_API_Biblioteca/internal/middleware"
 )
@@ -57,8 +59,8 @@ func (s *serviceUser) GetById(ctx context.Context, id int64) (*Users, error) {
 }
 
 func (s *serviceUser) Update(ctx context.Context, user *Users) error {
-	if err := user.Validate(); err != nil {
-		return err
+	if strings.TrimSpace(user.Name) == "" {
+		return errors.New("nome ou username não podem estar em branco")
 	}
 
 	return s.repo.Update(ctx, user)

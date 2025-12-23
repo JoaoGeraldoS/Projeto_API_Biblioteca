@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"time"
 )
 
 type UserRepository struct {
@@ -34,7 +33,7 @@ func (r *UserRepository) Create(ctx context.Context, user *Users) error {
 }
 
 func (r *UserRepository) GetAll(ctx context.Context) ([]Users, error) {
-	query := `SELECT id, name, email, created_at, updated_at FROM users`
+	query := `SELECT id, name, email, username, role, bio, created_at, updated_at FROM users`
 
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
@@ -45,14 +44,19 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]Users, error) {
 	var getUsers []Users
 
 	for rows.Next() {
-		var createdAtRaw, updatedAtRaw time.Time
-		createdAt := createdAtRaw.Format("01/01/01 15:04:05")
-		updatedAt := updatedAtRaw.Format("01/01/01 15:04:05")
-
 		var u Users
+		var tempBio sql.NullString
 
-		if err := rows.Scan(&u.ID, &u.Name, &u.Email, &createdAt, &updatedAt); err != nil {
+		if err := rows.Scan(
+			&u.ID, &u.Name, &u.Email, &u.Username, &u.Role, &tempBio, &u.CreatedAt, &u.UpdatedAt,
+		); err != nil {
 			return nil, err
+		}
+
+		if tempBio.Valid {
+			u.Bio = tempBio.String
+		} else {
+			u.Bio = ""
 		}
 
 		getUsers = append(getUsers, u)
@@ -62,13 +66,13 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]Users, error) {
 }
 
 func (r *UserRepository) GetById(ctx context.Context, id int64) (*Users, error) {
-	query := `SELECT id, name, email, bio, created_at FROM users WHERE id = ?`
+	query := `SELECT id, name, email, username, role, bio, created_at, updated_at FROM users WHERE id = ?`
 
 	var user Users
 	var tempBio sql.NullString
 
 	row := r.db.QueryRowContext(ctx, query, id).Scan(
-		&user.ID, &user.Name, &user.Email, &tempBio, &user.CreatedAt,
+		&user.ID, &user.Name, &user.Email, &user.Username, &user.Role, &tempBio, &user.CreatedAt, &user.UpdatedAt,
 	)
 
 	if tempBio.Valid {
@@ -85,7 +89,7 @@ func (r *UserRepository) GetById(ctx context.Context, id int64) (*Users, error) 
 }
 
 func (r *UserRepository) Update(ctx context.Context, user *Users) error {
-	query := "UPDATE users SET name = ? bio = ? WHERE id = ?"
+	query := "UPDATE users SET name = ?, bio = ? WHERE id = ?"
 
 	result, err := r.db.ExecContext(ctx, query, user.Name, user.Bio, user.ID)
 	if err != nil {

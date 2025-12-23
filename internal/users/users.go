@@ -43,8 +43,12 @@ type IUsersRepository interface {
 }
 
 func (u *Users) Validate() error {
-	if strings.TrimSpace(u.Name) == "" || strings.TrimSpace(u.Username) == "" {
+	if strings.TrimSpace(u.Name) == "" {
 		return errors.New("nome ou username não podem estar em branco")
+	}
+
+	if strings.TrimSpace(u.Username) == "" {
+		return errors.New("username não pode esta em branco")
 	}
 
 	if len(u.Password) < 6 {

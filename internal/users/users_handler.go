@@ -121,12 +121,12 @@ func (h *UserHandler) ReadUser(c *gin.Context) {
 }
 
 // @Summary Atualiza um usuario
-// @Description Recebe um objeto JSON UserRequest e atualiza o usuario no banco de dados.
+// @Description Recebe um objeto JSON UserUpdateRequest e atualiza o usuario no banco de dados.
 // @Tags users
 // @Accept  json
 // @Produce json
 // @Param id path int true "Recebe o id da usuario"
-// @Param   user body UserRequest true "Dados do novo usuario a ser atualizado"
+// @Param user body UserUpdateRequest true "Dados do novo usuario a ser atualizado"
 // @Success 204  "Usuario atualizado com sucesso"
 // @Failure 400 {object} middleware.APIError "Requisição Inválida (JSON malformado ou campo obrigatório ausente)"
 // @Failure 500 {object} middleware.APIError "Erro interno do servidor"
@@ -142,7 +142,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	var dtoReq UserRequest
+	var dtoReq UserUpdateRequest
 
 	if err := c.ShouldBindJSON(&dtoReq); err != nil {
 		h.logApp.Error("falha ao ler json", zap.Error(err))

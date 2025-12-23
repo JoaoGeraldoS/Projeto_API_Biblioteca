@@ -110,7 +110,7 @@ func routesUsers(pr *gin.RouterGroup, pl *gin.RouterGroup, h *users.UserHandler)
 	usersPr := pr.Group("/api/users")
 	usersPl := pl.Group("/api/users")
 
-	usersPr.PUT("/:id", middleware.RequireRole("admin"), h.UpdateUser)
+	usersPr.PUT("/:id", middleware.RequireRole("user"), h.UpdateUser)
 	usersPr.DELETE("/:id", middleware.RequireRole("admin"), h.DeleteUser)
 
 	usersPl.GET("/", h.ReadAllUsers)
