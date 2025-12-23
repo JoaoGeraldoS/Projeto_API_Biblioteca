@@ -21,16 +21,6 @@ definitions:
       name:
         type: string
     type: object
-  authors.Authors:
-    properties:
-      description:
-        type: string
-      id:
-        format: int64
-        type: integer
-      name:
-        type: string
-    type: object
   books.BookCategoryRequest:
     description: Dados necessários pra fazer o relacionamento
     properties:
@@ -68,12 +58,12 @@ definitions:
   books.BookResponse:
     properties:
       author:
-        $ref: '#/definitions/authors.Authors'
+        $ref: '#/definitions/authors.AuthorResponse'
       author_id:
         type: integer
       categories:
         items:
-          $ref: '#/definitions/categories.Category'
+          $ref: '#/definitions/categories.CategoryResponse'
         type: array
       content:
         type: string
@@ -86,16 +76,6 @@ definitions:
       title:
         type: string
       updated_at:
-        type: string
-    type: object
-  categories.Category:
-    properties:
-      createdAT:
-        type: string
-      id:
-        format: int64
-        type: integer
-      name:
         type: string
     type: object
   categories.CategoryRequest:
@@ -150,9 +130,6 @@ definitions:
   users.UserRequest:
     description: Dados necessários para criar usuario
     properties:
-      bio:
-        example: Meu nome é Joaquim
-        type: string
       email:
         example: joaquim@email.com
         type: string
@@ -191,6 +168,18 @@ definitions:
         type: string
       username:
         type: string
+    type: object
+  users.UserUpdateRequest:
+    description: Dados necessários para atualizar usuario
+    properties:
+      bio:
+        example: Meu nome é Joaquim
+        type: string
+      name:
+        example: Joaquim Silva
+        type: string
+    required:
+    - name
     type: object
 host: localhost:8080
 info:
@@ -554,8 +543,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: Recebe um objeto JSON UserRequest e atualiza o usuario no banco
-        de dados.
+      description: Recebe um objeto JSON UserUpdateRequest e atualiza o usuario no
+        banco de dados.
       parameters:
       - description: Recebe o id da usuario
         in: path
@@ -567,7 +556,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/users.UserRequest'
+          $ref: '#/definitions/users.UserUpdateRequest'
       produces:
       - application/json
       responses:

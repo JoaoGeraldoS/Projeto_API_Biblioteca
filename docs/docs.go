@@ -523,7 +523,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Recebe um objeto JSON UserRequest e atualiza o usuario no banco de dados.",
+                "description": "Recebe um objeto JSON UserUpdateRequest e atualiza o usuario no banco de dados.",
                 "consumes": [
                     "application/json"
                 ],
@@ -548,7 +548,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.UserRequest"
+                            "$ref": "#/definitions/users.UserUpdateRequest"
                         }
                     }
                 ],
@@ -1066,21 +1066,6 @@ const docTemplate = `{
                 }
             }
         },
-        "authors.Authors": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "books.BookCategoryRequest": {
             "description": "Dados necessários pra fazer o relacionamento",
             "type": "object",
@@ -1131,7 +1116,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "author": {
-                    "$ref": "#/definitions/authors.Authors"
+                    "$ref": "#/definitions/authors.AuthorResponse"
                 },
                 "author_id": {
                     "type": "integer"
@@ -1139,7 +1124,7 @@ const docTemplate = `{
                 "categories": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/categories.Category"
+                        "$ref": "#/definitions/categories.CategoryResponse"
                     }
                 },
                 "content": {
@@ -1158,21 +1143,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "categories.Category": {
-            "type": "object",
-            "properties": {
-                "createdAT": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "name": {
                     "type": "string"
                 }
             }
@@ -1258,10 +1228,6 @@ const docTemplate = `{
                 "username"
             ],
             "properties": {
-                "bio": {
-                    "type": "string",
-                    "example": "Meu nome é Joaquim"
-                },
                 "email": {
                     "type": "string",
                     "example": "joaquim@email.com"
@@ -1309,6 +1275,23 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "users.UserUpdateRequest": {
+            "description": "Dados necessários para atualizar usuario",
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "bio": {
+                    "type": "string",
+                    "example": "Meu nome é Joaquim"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Joaquim Silva"
                 }
             }
         }
